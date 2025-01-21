@@ -1,0 +1,23 @@
+{
+  "name": "news-web-app",
+  "version": "1.0.0",
+  "description": "A scalable, TypeScript-powered news web application featuring authentication, CRUD operations, and search functionality. Built with Node.js, Express.js, EJS templates, Bootstrap, and PostgreSQL for a robust admin and visitor experience.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "news"
+  ],
+  "author": "Hilario Junior Nengare",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "express-validator": "^7.2.1",
+    "pg": "^8.13.1"
+  }
+}
