@@ -5,6 +5,7 @@ import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
+import * as db from './db';
 import { initializeDB, getArticles, getArticleBySlug } from './db';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError, ErrorMessages } from './utils/errors';
