@@ -49,10 +49,14 @@ export class ArticleController {
       });
     } catch (error) {
       console.error('Error fetching articles:', error);
-      res.status(500).render('error', {
-        message: 'Error fetching articles',
-        error: { status: 500 },
-        user: req.session.user
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error fetching articles';
+      const session = req.session as CustomSession;
+      
+      res.status(status).render('error', {
+        message,
+        error: { status },
+        user: session.user
       });
     }
   };
