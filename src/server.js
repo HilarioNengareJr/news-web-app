@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import * as db from './db.js';
+import { initDatabase } from './db/init.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { AppError, ErrorMessages } from './utils/errors.js';
 
@@ -176,7 +177,15 @@ app.use((req, res, next) => {
 // Error handler
 app.use(errorHandler);
 
-// Start server
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+// Initialize database and start server
+(async () => {
+  try {
+    await initDatabase();
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
+  } catch (error) {
+    console.error('Failed to initialize database:', error);
+    process.exit(1);
+  }
+})();
