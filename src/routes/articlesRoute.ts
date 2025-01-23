@@ -16,11 +16,11 @@ import { Router } from 'express';
  */
 import { ArticleController } from '../controllers/articleController';
 
-const router = Router();
+const articlesRouter = Router();
 const articleController = new ArticleController();
 
-router.get('/', articleController.getAllArticles);
-router.get('/article/:id', articleController.getArticleById);
-router.get('/search', articleController.searchArticles);
+articlesRouter.get('/', articleController.getAllArticles);
+articlesRouter.get('/article/:id', articleController.getArticleById);
+articlesRouter.get('/search', articleController.searchArticles);
 
-export default router;
+export default articlesRouter;
