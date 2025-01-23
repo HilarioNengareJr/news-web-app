@@ -10,7 +10,17 @@ export enum ErrorType {
 interface ErrorMessagesType {
   [key: string]: {
     default: string;
-    [key: string]: string;
+    invalid?: string;
+    expired?: string;
+    adminOnly?: string;
+    article?: string;
+    page?: string;
+    required?: string;
+    email?: string;
+    password?: string;
+    connection?: string;
+    maintenance?: string;
+    [key: string]: string | undefined;
   };
 }
 

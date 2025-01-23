@@ -47,7 +47,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(session({
-  secret: process.env.SESSION_SECRET as string,
+  secret: process.env.SESSION_SECRET ?? (() => {
+    throw new Error('SESSION_SECRET environment variable is required');
+  })(),
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -72,7 +74,10 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 // API error handler
-app.use('/api', (err: Error, req: Request, res: Response, next: NextFunction) => {
+app.use('/api', (err: unknown, req: Request, res: Response, next: NextFunction) => {
+  if (!(err instanceof Error)) {
+    err = new Error('Unknown error occurred');
+  }
   console.error(err);
   res.status(500).json({
     error: {

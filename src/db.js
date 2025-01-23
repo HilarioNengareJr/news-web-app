@@ -50,7 +50,9 @@ export const supabase = createClient(
 const ITEMS_PER_PAGE = 9;
 
 interface SearchParams {
-  search?: string | null;
+  search?: string;
+  page?: number;
+  tags?: string[];
 }
 
 export async function getArticles(
