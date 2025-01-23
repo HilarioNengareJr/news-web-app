@@ -70,4 +70,20 @@ export class AuthController {
   public showDashboard = (req: AuthenticatedRequest, res: Response): void => {
     res.render('/pages/dashboard', { user: req.session.user });
   };
+
+  public register = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+    try {
+      const { email, password } = req.body;
+      const user = await this.authService.register(email, password);
+      
+      req.session.user = user;
+      res.redirect('/pages/dashboard');
+    } catch (error) {
+      console.error('Registration error:', error);
+      res.render('/pages/register', {
+        error: error instanceof Error ? error.message : 'Registration failed',
+        user: req.session.user
+      });
+    }
+  };
 }
