@@ -1,15 +1,20 @@
-// Error types
-export const ErrorType = {
-  AUTHENTICATION: 'AUTHENTICATION',
-  AUTHORIZATION: 'AUTHORIZATION',
-  NOT_FOUND: 'NOT_FOUND',
-  VALIDATION: 'VALIDATION',
-  DATABASE: 'DATABASE',
-  SERVER: 'SERVER'
-};
+export enum ErrorType {
+  AUTHENTICATION = 'AUTHENTICATION',
+  AUTHORIZATION = 'AUTHORIZATION',
+  NOT_FOUND = 'NOT_FOUND',
+  VALIDATION = 'VALIDATION',
+  DATABASE = 'DATABASE',
+  SERVER = 'SERVER'
+}
 
-// User-friendly error messages
-export const ErrorMessages = {
+interface ErrorMessagesType {
+  [key: string]: {
+    default: string;
+    [key: string]: string;
+  };
+}
+
+export const ErrorMessages: ErrorMessagesType = {
   [ErrorType.AUTHENTICATION]: {
     default: 'Unable to sign in. Please check your credentials and try again.',
     invalid: 'The email or password you entered is incorrect.',
@@ -40,37 +45,46 @@ export const ErrorMessages = {
   }
 };
 
-// Error handler class
 export class AppError extends Error {
-  constructor(type, message, status = 500, details = null) {
-    super(message);
+  type: ErrorType;
+  status: number;
+  details: any;
+  userMessage: string;
+
+  constructor(
+    type: ErrorType,
+    message: string | null = null,
+    status: number = 500,
+    details: any = null
+  ) {
+    super(message || ErrorMessages[type].default);
     this.type = type;
     this.status = status;
     this.details = details;
     this.userMessage = message || ErrorMessages[type].default;
   }
 
-  static authentication(message = null, details = null) {
+  static authentication(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.AUTHENTICATION, message, 401, details);
   }
 
-  static authorization(message = null, details = null) {
+  static authorization(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.AUTHORIZATION, message, 403, details);
   }
 
-  static notFound(message = null, details = null) {
+  static notFound(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.NOT_FOUND, message, 404, details);
   }
 
-  static validation(message = null, details = null) {
+  static validation(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.VALIDATION, message, 400, details);
   }
 
-  static database(message = null, details = null) {
+  static database(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.DATABASE, message, 500, details);
   }
 
-  static server(message = null, details = null) {
+  static server(message: string | null = null, details: any = null) {
     return new AppError(ErrorType.SERVER, message, 500, details);
   }
 }

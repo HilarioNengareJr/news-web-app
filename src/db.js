@@ -1,6 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import slugify from 'slugify';
+import { Article, PaginatedResponse } from '../types';
 
 dotenv.config();
 
@@ -48,7 +49,14 @@ export const supabase = createClient(
 
 const ITEMS_PER_PAGE = 9;
 
-export async function getArticles(searchParams = null, page = 1) {
+interface SearchParams {
+  search?: string | null;
+}
+
+export async function getArticles(
+  searchParams: SearchParams | null = null, 
+  page: number = 1
+): Promise<PaginatedResponse<Article>> {
   const start = (page - 1) * ITEMS_PER_PAGE;
   const end = start + ITEMS_PER_PAGE - 1;
 
@@ -71,14 +79,14 @@ export async function getArticles(searchParams = null, page = 1) {
   if (error) throw error;
   
   return {
-    articles: data || [],
+    data: data || [],
     total: count || 0,
     totalPages: Math.ceil((count || 0) / ITEMS_PER_PAGE),
     currentPage: page
   };
 }
 
-export async function getArticleBySlug(slug) {
+export async function getArticleBySlug(slug: string): Promise<Article | null> {
   const { data, error } = await supabase
     .from('articles')
     .select(`
@@ -92,7 +100,10 @@ export async function getArticleBySlug(slug) {
   return data;
 }
 
-export async function createArticle(articleData, userId) {
+export async function createArticle(
+  articleData: Omit<Article, 'id' | 'slug' | 'published_at' | 'updated_at' | 'author_id'>,
+  userId: string
+): Promise<Article> {
   const slug = slugify(articleData.title, { lower: true, strict: true });
   
   const { data, error } = await supabase
@@ -110,7 +121,10 @@ export async function createArticle(articleData, userId) {
   return data;
 }
 
-export async function updateArticle(id, articleData) {
+export async function updateArticle(
+  id: string, 
+  articleData: Partial<Article>
+): Promise<Article> {
   const { data, error } = await supabase
     .from('articles')
     .update({
@@ -125,7 +139,7 @@ export async function updateArticle(id, articleData) {
   return data;
 }
 
-export async function deleteArticle(id) {
+export async function deleteArticle(id: string): Promise<boolean> {
   const { error } = await supabase
     .from('articles')
     .delete()

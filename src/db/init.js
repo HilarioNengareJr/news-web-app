@@ -1,9 +1,10 @@
-import { supabase } from '../db.js';
+import { supabase } from '../db';
+import { Article } from '../types';
 
-export async function initDatabase() {
+export async function initDatabase(): Promise<void> {
   try {
     // Create articles table if it doesn't exist
-    const { data: tableData, error: tableError } = await supabase
+    const { error: tableError } = await supabase
       .rpc('create_articles_table_if_not_exists');
 
     if (tableError) throw tableError;
@@ -20,7 +21,7 @@ export async function initDatabase() {
     }
 
     // Add sample articles
-    const sampleArticles = [
+    const sampleArticles: Partial<Article>[] = [
       {
         title: 'Introduction to Modern Web Development',
         content: 'Web development has evolved significantly...',
@@ -41,7 +42,7 @@ export async function initDatabase() {
       }
     ];
 
-    const { data: insertedArticles, error: insertError } = await supabase
+    const { error: insertError } = await supabase
       .from('articles')
       .insert(sampleArticles);
 
