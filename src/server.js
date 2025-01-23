@@ -1,20 +1,20 @@
-import express from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
-import * as db from './db.js';
-import { initDatabase } from './db/init.js';
-import { errorHandler } from './middleware/errorHandler.js';
-import { AppError, ErrorMessages } from './utils/errors.js';
+import * as db from './db';
+import { initDatabase } from './db/init';
+import { errorHandler } from './middleware/errorHandler';
+import { AppError, ErrorMessages } from './utils/errors';
 
 // Import routes
-import authRoutes from './routes/auth.js';
+import authRoutes from './routes/auth';
 
 // Import middleware
-import { requireAuth } from './middleware/auth.js';
+import { requireAuth } from './middleware/auth';
 
 dotenv.config();
 
@@ -25,7 +25,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Security middleware
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(session({
-  secret: process.env.SESSION_SECRET,
+  secret: process.env.SESSION_SECRET!,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -55,20 +55,19 @@ app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
 // Add middleware to determine if search should be shown
-app.use((req, res, next) => {
-  // Only show search on the articles page and not on login or other auth pages
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.locals.showSearch = req.path === '/articles' && !req.path.startsWith('/login');
   res.locals.isAdmin = !!req.session.user;
   next();
 });
 
 // API error handler
-app.use('/api', (err, req, res, next) => {
+app.use('/api', (err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error(err);
-  res.status(err.status || 500).json({
+  res.status(500).json({
     error: {
       message: err.message || 'Internal server error',
-      status: err.status || 500
+      status: 500
     }
   });
 });
@@ -77,7 +76,7 @@ app.use('/api', (err, req, res, next) => {
 app.use('/', authRoutes);
 
 // Admin routes
-app.get('/admin', requireAuth, async (req, res, next) => {
+app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articles = await db.getArticles();
     res.format({
@@ -85,7 +84,7 @@ app.get('/admin', requireAuth, async (req, res, next) => {
         res.json(articles);
       },
       'text/html': () => {
-        res.render('admin-dashboard', { articles: articles.articles });
+        res.render('admin-dashboard', { articles: articles.data });
       }
     });
   } catch (error) {
@@ -93,12 +92,12 @@ app.get('/admin', requireAuth, async (req, res, next) => {
   }
 });
 
-// Articles listing page (moved from home)
-app.get('/articles', async (req, res, next) => {
+// Articles listing page
+app.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const page = parseInt(req.query.page) || 1;
+    const page = parseInt(req.query.page as string) || 1;
     const searchParams = {
-      search: req.query.search || null
+      search: req.query.search as string || null
     };
     
     const articles = await db.getArticles(searchParams, page);
@@ -124,8 +123,8 @@ app.get('/articles', async (req, res, next) => {
   }
 });
 
-// Home page (without search)
-app.get('/', async (req, res, next) => {
+// Home page
+app.get('/', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articles = await db.getArticles(null, 1);
     res.format({
@@ -149,7 +148,8 @@ app.get('/', async (req, res, next) => {
   }
 });
 
-app.get('/article/:slug', async (req, res, next) => {
+// Single article page
+app.get('/article/:slug', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const article = await db.getArticleBySlug(req.params.slug);
     if (!article) {
@@ -170,7 +170,7 @@ app.get('/article/:slug', async (req, res, next) => {
 });
 
 // 404 handler
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   next(AppError.notFound(ErrorMessages.NOT_FOUND.page));
 });
 
