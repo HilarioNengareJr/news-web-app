@@ -9,7 +9,7 @@
     "start": "node dist/app.js",
     "lint": "eslint . --ext .ts",
     "test": "jest",
-    "migrate": "node dist/db/migrations/migrate.js",
+    "migrate": "ts-node src/db/migrations/migrate.ts",
     "seed": "node dist/db/seeds/seed.js"
   },
   "dependencies": {
