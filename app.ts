@@ -7,21 +7,18 @@
 
 // Import node modules
 import express, { Request, Response, NextFunction } from 'express';
-import cors from 'cors';
-import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import dotenv from 'dotenv';
 
 // Import custom modules
 import authRouter from './src/routes/auth.route';
-import articlesRouter from './src/routes/articles.route';
+import articlesRouter from '../src/routes/articles.route';
 import adminRouter from './src/routes/admin.route';
 import authenticateUser from './src/middlewares/auth_user.middleware';
 
-// Load environment variables
+
 dotenv.config();
 
-// Initialize express app
 const app = express();
 
 /**
@@ -38,8 +35,6 @@ app.use(express.static(`${__dirname}/public`));
 /**
  * Enable middleware
  */
-app.use(cors());
-app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
@@ -50,23 +45,29 @@ app.use(
   })
 );
 
-/**
- * Routes for the news application
- */
-
-// Authentication routes
+/* 
+* Authentication routes 
+*/
 app.use('/auth', authRouter);
 
-// Middleware to check if the user is authenticated
+/** 
+* Middleware to check if the user is authenticated
+*/ 
 app.use(authenticateUser);
 
-// Admin routes for managing news articles
+/**
+ * Admin routes for managing news articles
+ */
 app.use('/admin', adminRouter);
 
-// Public routes for viewing news articles
+/**
+ * Public routes for viewing news articles
+ */
 app.use('/articles', articlesRouter);
 
-// Home page route
+/** 
+ * Home page route 
+ */ 
 app.get('/', (req: Request, res: Response) => {
   res.render('index', { title: 'News App Home' });
 });
@@ -79,7 +80,9 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   res.status(500).send('Something went wrong! Please try again later.');
 });
 
-// Start the server
+/**
+ * Start the server
+ */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
