@@ -16,11 +16,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Test Supabase connection
 async function testConnection() {
   try {
-    // Test connection by querying a simple table
+    // Test connection with a simple query
     const { data, error } = await supabase
-      .from('articles')
-      .select('id')
-      .limit(1);
+      .rpc('version')
+      .single();
     
     if (error) throw error;
     console.log('Connected to Supabase successfully');
