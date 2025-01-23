@@ -9,6 +9,7 @@
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import { supabase } from './src/config/db';
 
 // Import custom modules
 import authRouter from './src/routes/authRoute';
