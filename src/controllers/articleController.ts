@@ -34,7 +34,8 @@ export class ArticleController {
         articles: formattedArticles.slice((page - 1) * limit, page * limit),
         currentPage: page,
         totalPages,
-        user: req.session.user
+        user: req.session.user,
+        hideSearch: false
       });
     } catch (error) {
       console.error('Error fetching articles:', error);
@@ -64,7 +65,8 @@ export class ArticleController {
 
       res.render('pages/article', { 
         article: formattedArticle, 
-        user: req.session.user 
+        user: req.session.user,
+        hideSearch: true
       });
     } catch (error) {
       console.error('Error fetching article:', error);
@@ -98,7 +100,8 @@ export class ArticleController {
       res.render('partials/search', {
         articles: formattedArticles,
         query,
-        user: req.session.user
+        user: req.session.user,
+        hideSearch: true
       });
     } catch (error) {
       console.error('Error searching articles:', error);
