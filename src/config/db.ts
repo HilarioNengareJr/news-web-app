@@ -1,10 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { Pool } from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Supabase client
+// Supabase client configuration
 const supabaseUrl = process.env.SUPABASE_URL || '';
 const supabaseKey = process.env.SUPABASE_KEY || '';
 
@@ -14,28 +13,21 @@ if (!supabaseUrl || !supabaseKey) {
 
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// PostgreSQL connection pool
-if (!process.env.SUPABASE_DB_URL) {
-  throw new Error('SUPABASE_DB_URL is not defined in environment variables');
+// Test Supabase connection
+async function testConnection() {
+  try {
+    const { data, error } = await supabase
+      .rpc('test_connection')
+      .single();
+    
+    if (error) throw error;
+    console.log('Connected to Supabase successfully:', data);
+  } catch (error) {
+    console.error('Supabase connection error:', error);
+    process.exit(1);
+  }
 }
 
-export const pool = new Pool({
-  connectionString: process.env.SUPABASE_DB_URL,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
-});
+testConnection();
 
-// Test database connection
-pool.connect((err, client, release) => {
-  if (err) {
-    return console.error('Error acquiring client', err.stack);
-  }
-  client.query('SELECT NOW()', (err, result) => {
-    release();
-    if (err) {
-      return console.error('Error executing query', err.stack);
-    }
-    console.log('Connected to database successfully');
-  });
-});
-
-export { supabase, pool };
+export { supabase };
