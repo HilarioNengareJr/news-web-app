@@ -11,9 +11,9 @@ import session from 'express-session';
 import dotenv from 'dotenv';
 
 // Import custom modules
-import authRouter from './src/routes/auth.route';
+import authRouter from './src/routes/authRoute';
 import articlesRouter from '../src/routes/articles.route';
-import adminRouter from './src/routes/admin.route';
+import adminRouter from './src/routes/adminRoute';
 import authenticateUser from './src/middlewares/auth_user.middleware';
 
 

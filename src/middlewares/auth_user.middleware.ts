@@ -6,16 +6,27 @@
 
 'use strict';
 
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
+import { Session } from 'express-session';
 
-export const login = (req: Request, res: Response): void => {
-  const { access_token, refresh_token } = req.cookies;
-
-  if (access_token && refresh_token) {
-    return res.redirect('/');
-  } else {
-    res.render('./pages/login');
+export interface AuthenticatedRequest extends Request {
+  session: Session & {
+    user?: {
+      id: string;
+      email: string;
+      isAdmin: boolean;
+    };
   }
+}
 
-  res.render('./pages/login');
+export const isAuthenticated = (
+  req: AuthenticatedRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  if (req.session.user?.isAdmin) {
+    next();
+  } else {
+    res.redirect('../../Views/pages/login');
+  }
 };
