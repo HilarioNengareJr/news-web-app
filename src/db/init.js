@@ -49,7 +49,7 @@ export async function initDatabase(): Promise<void> {
     if (insertError) throw insertError;
 
     console.log('Successfully initialized database with sample articles');
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error initializing database:', error);
     if (error instanceof Error) {
       throw error;

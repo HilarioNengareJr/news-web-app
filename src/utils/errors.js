@@ -1,4 +1,4 @@
-export enum ErrorType {
+export const enum ErrorType {
   AUTHENTICATION = 'AUTHENTICATION',
   AUTHORIZATION = 'AUTHORIZATION',
   NOT_FOUND = 'NOT_FOUND',

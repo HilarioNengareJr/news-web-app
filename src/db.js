@@ -56,7 +56,7 @@ interface SearchParams {
 }
 
 export async function getArticles(
-  searchParams: SearchParams | null = null, 
+  searchParams: Partial<SearchParams> | null = null, 
   page: number = 1
 ): Promise<PaginatedResponse<Article>> {
   const start = (page - 1) * ITEMS_PER_PAGE;

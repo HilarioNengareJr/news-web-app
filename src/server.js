@@ -17,6 +17,13 @@ import authRoutes from './routes/auth';
 import { requireAuth } from './middleware/auth';
 
 declare module 'express-session' {
+  interface Session {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+    };
+  }
   interface SessionData {
     user?: {
       id: string;
