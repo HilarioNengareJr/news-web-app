@@ -9,6 +9,11 @@
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import dotenv from 'dotenv';
+import helmet from 'helmet';
+import cors from 'cors';
+import compression from 'compression';
+import morgan from 'morgan';
+import createHttpError from 'http-errors';
 import { supabase } from './src/config/db';
 
 // Import custom modules
@@ -20,6 +25,21 @@ import { isAuthenticated } from './src/middlewares/authUserMiddleware';
 dotenv.config();
 
 const app = express();
+
+// Security middleware
+app.use(helmet());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true
+}));
+
+// Performance middleware
+app.use(compression());
+
+// Logging
+if (process.env.NODE_ENV !== 'test') {
+  app.use(morgan('combined'));
+}
 
 /**
  * EJS settings
@@ -67,12 +87,23 @@ app.get('/', (req: Request, res: Response) => {
   res.render('index', { title: 'News App Home' });
 });
 
-/**
- * Error handling middleware
- */
-app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
-  console.error(err.stack);
-  res.status(500).send('Something went wrong! Please try again later.');
+// 404 handler
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(createHttpError(404, 'Not Found'));
+});
+
+// Error handling middleware
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.error(err.stack);
+  }
+  
+  res.status(err.status || 500).json({
+    error: {
+      status: err.status || 500,
+      message: err.message || 'Internal Server Error'
+    }
+  });
 });
 
 /**
