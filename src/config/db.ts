@@ -16,10 +16,10 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Test Supabase connection
 async function testConnection() {
   try {
-    // Test connection by querying a system table
+    // Test connection by querying a simple table
     const { data, error } = await supabase
-      .from('pg_stat_activity')
-      .select('*')
+      .from('articles')
+      .select('id')
       .limit(1);
     
     if (error) throw error;
