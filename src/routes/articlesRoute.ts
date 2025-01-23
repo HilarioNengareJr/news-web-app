@@ -23,4 +23,4 @@ articlesRouter.get('/', articleController.getAllArticles);
 articlesRouter.get('/article/:id', articleController.getArticleById);
 articlesRouter.get('/search', articleController.searchArticles);
 
-export default articlesRouter;
+export { articlesRouter };

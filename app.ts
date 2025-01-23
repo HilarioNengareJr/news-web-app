@@ -12,8 +12,8 @@ import dotenv from 'dotenv';
 
 // Import custom modules
 import authRouter from './src/routes/authRoute';
-import articlesRouter from '../src/routes/articlesRoute';
-import authenticateUser from './src/middlewares/authUserMiddleware';
+import { articlesRouter } from './src/routes/articles.route';
+import { authenticateUser } from './src/middlewares/authUserMiddleware';
 
 
 dotenv.config();
