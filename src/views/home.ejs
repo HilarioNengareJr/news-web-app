@@ -1,0 +1,108 @@
+<%- include('layouts/header') %>
+
+<div class="row g-4 mb-4">
+    <% if (articles.articles && articles.articles.length > 0) { %>
+        <% articles.articles.forEach((article, index) => { %>
+            <div class="col-12 <%= index === 0 ? '' : 'col-md-6 col-lg-4' %>">
+                <div class="card article-card shadow-sm h-100">
+                    <img 
+                        src="<%= article.image_url %>" 
+                        class="card-img-top" 
+                        alt="<%= article.title %>"
+                        style="<%= index === 0 ? 'height: 400px;' : '' %>">
+                    <div class="card-body">
+                        <h5 class="card-title"><%= article.title %></h5>
+                        <p class="card-text text-muted"><%= article.excerpt %></p>
+                        <div class="mb-3">
+                            <% article.tags.forEach(tag => { %>
+                                <span class="badge tag-badge"><%= tag %></span>
+                            <% }) %>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="/article/<%= article.slug %>" class="btn btn-primary">Read More</a>
+                            <small class="text-muted">
+                                <%= new Date(article.published_at).toLocaleDateString('en-US', { 
+                                    year: 'numeric', 
+                                    month: 'short', 
+                                    day: 'numeric' 
+                                }) %>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body text-center py-5">
+                    <div class="empty-state">
+                        <i class="bi bi-journal-text display-1 text-primary mb-4"></i>
+                        <h2 class="mb-3">No Articles Found</h2>
+                        <% if (locals.searchParams?.search) { %>
+                            <p class="text-muted mb-4">
+                                No articles match your search "<%= searchParams.search %>". 
+                                Try different keywords or browse all articles.
+                            </p>
+                            <a href="/" class="btn btn-primary">
+                                <i class="bi bi-arrow-left"></i> View All Articles
+                            </a>
+                        <% } else { %>
+                            <p class="text-muted mb-4">
+                                There are no articles published yet. Check back soon for the latest football analytics insights!
+                            </p>
+                            <% if (locals.isAdmin) { %>
+                                <a href="/admin/article/new" class="btn btn-primary">
+                                    <i class="bi bi-plus-lg"></i> Create First Article
+                                </a>
+                            <% } %>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+<% if (articles.articles && articles.articles.length > 0 && articles.totalPages > 1) { %>
+<nav aria-label="Page navigation" class="my-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item <%= articles.currentPage === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= articles.currentPage - 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= articles.currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : '' %>>Previous</a>
+        </li>
+        <% for(let i = 1; i <= articles.totalPages; i++) { %>
+            <li class="page-item <%= articles.currentPage === i ? 'active' : '' %>">
+                <a class="page-link" href="?page=<%= i %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>"><%= i %></a>
+            </li>
+        <% } %>
+        <li class="page-item <%= articles.currentPage === articles.totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= articles.currentPage + 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= articles.currentPage === articles.totalPages ? 'tabindex="-1" aria-disabled="true"' : '' %>>Next</a>
+        </li>
+    </ul>
+</nav>
+<% } %>
+
+<style>
+.empty-state {
+    padding: 2rem;
+}
+
+.empty-state .bi {
+    color: var(--primary-color);
+    opacity: 0.8;
+}
+
+.empty-state h2 {
+    color: #1a202c;
+    font-weight: 600;
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+
+<%- include('layouts/footer') %>

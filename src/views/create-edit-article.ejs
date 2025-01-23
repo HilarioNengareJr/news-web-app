@@ -1,0 +1,92 @@
+<%- include('layouts/header') %>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <h2 class="card-title mb-4"><%= article ? 'Edit Article' : 'Create New Article' %></h2>
+        <form action="<%= article ? `/admin/article/${article.id}?_method=PUT` : '/admin/article' %>" method="POST">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" value="<%= article ? article.title : '' %>" required>
+            </div>
+            <div class="mb-3">
+                <label for="image_url" class="form-label">Image URL</label>
+                <input type="url" class="form-control" id="image_url" name="image_url" value="<%= article ? article.image_url : '' %>" required>
+                <div class="form-text">Use high-quality images from Unsplash or similar services</div>
+            </div>
+            <div class="mb-3">
+                <label for="excerpt" class="form-label">Excerpt</label>
+                <textarea class="form-control" id="excerpt" name="excerpt" rows="3" required><%= article ? article.excerpt : '' %></textarea>
+                <div class="form-text">A brief summary of the article (appears in article cards)</div>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" name="content" rows="20" required><%= article ? article.content : '' %></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="tags" class="form-label">Tags</label>
+                <div class="tag-input-container">
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="tags" 
+                        name="tags" 
+                        value="<%= article ? article.tags.join(', ') : '' %>" 
+                        list="tagSuggestions"
+                        placeholder="Enter tags separated by commas"
+                        required
+                    >
+                    <div class="tag-suggestions mt-2">
+                        <% if (locals.tags) { %>
+                            <% tags.forEach(tag => { %>
+                                <button type="button" class="btn btn-sm btn-outline-secondary me-2 mb-2 tag-suggestion" data-tag="<%= tag %>">
+                                    <%= tag %>
+                                </button>
+                            <% }) %>
+                        <% } %>
+                    </div>
+                    <datalist id="tagSuggestions">
+                        <% if (locals.tags) { %>
+                            <% tags.forEach(tag => { %>
+                                <option value="<%= tag %>">
+                            <% }) %>
+                        <% } %>
+                    </datalist>
+                </div>
+                <div class="form-text">Click tags to add them or type and use commas to separate multiple tags</div>
+            </div>
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-save"></i> Save
+                </button>
+                <a href="/admin" class="btn btn-secondary">
+                    <i class="bi bi-x"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- TinyMCE -->
+<script src="https://cdn.tiny.cloud/1/no-api-key/tinymce/6/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+    tinymce.init({
+        selector: '#content',
+        plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount',
+        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table | align lineheight | numlist bullist indent outdent | emoticons charmap | removeformat',
+        tinycomments_mode: 'embedded',
+        tinycomments_author: 'Author name',
+        mergetags_list: [
+            { value: 'First.Name', title: 'First Name' },
+            { value: 'Email', title: 'Email' },
+        ],
+        ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        height: 500,
+        menubar: true,
+        image_title: true,
+        automatic_uploads: false,
+        file_picker_types: 'image',
+        content_style: 'body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif; }'
+    });
+</script>
+
+<%- include('layouts/footer') %>

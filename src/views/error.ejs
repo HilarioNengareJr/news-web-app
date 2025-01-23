@@ -1,0 +1,68 @@
+<%- include('layouts/header') %>
+
+<div class="error-page">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body text-center p-5">
+            <div class="error-icon mb-4">
+              <%_ if (locals.type === 'AUTHENTICATION') { _%>
+                <i class="bi bi-shield-lock text-warning"></i>
+              <%_ } else if (locals.type === 'AUTHORIZATION') { _%>
+                <i class="bi bi-shield-x text-danger"></i>
+              <%_ } else if (locals.type === 'NOT_FOUND') { _%>
+                <i class="bi bi-search text-primary"></i>
+              <%_ } else if (locals.type === 'VALIDATION') { _%>
+                <i class="bi bi-exclamation-circle text-warning"></i>
+              <%_ } else { _%>
+                <i class="bi bi-exclamation-triangle text-danger"></i>
+              <%_ } _%>
+            </div>
+            <h1 class="error-title mb-4"><%= locals.title || 'Error' %></h1>
+            <p class="error-message text-muted mb-4"><%= locals.message || 'Something went wrong' %></p>
+            <div class="error-actions">
+              <a href="/" class="btn btn-primary">
+                <i class="bi bi-house"></i> Return Home
+              </a>
+              <%_ if (locals.type === 'AUTHENTICATION') { _%>
+                <a href="/login" class="btn btn-outline-primary ms-2">
+                  <i class="bi bi-box-arrow-in-right"></i> Sign In
+                </a>
+              <%_ } _%>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.error-page {
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+  padding: 2rem 0;
+}
+
+.error-icon {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.error-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.error-message {
+  font-size: 1.1rem;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<%- include('layouts/footer') %>
