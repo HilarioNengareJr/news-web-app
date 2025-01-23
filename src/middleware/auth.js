@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 import { Session } from '../types';
+import { Session } from '../types';
 
 export function requireAuth(req: Request & { session: Session }, res: Response, next: NextFunction) {
   if (!req.session.user) {
