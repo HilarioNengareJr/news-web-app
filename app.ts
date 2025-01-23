@@ -12,8 +12,8 @@ import dotenv from 'dotenv';
 
 // Import custom modules
 import authRouter from './src/routes/authRoute';
-import { articlesRouter } from './src/routes/articles.route';
-import { authenticateUser } from './src/middlewares/authUserMiddleware';
+import { articlesRouter } from './src/routes/articlesRoute';
+import { isAuthenticated } from './src/middlewares/authUserMiddleware';
 
 
 dotenv.config();
@@ -52,7 +52,7 @@ app.use('/auth', authRouter);
 /** 
 * Middleware to check if the user is authenticated
 */ 
-app.use(authenticateUser);
+app.use(isAuthenticated);
 
 /**
  * Public routes for viewing news articles
