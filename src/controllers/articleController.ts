@@ -183,7 +183,7 @@ export class ArticleController {
         content: req.body.content,
         excerpt: req.body.excerpt,
         imageUrl: req.body.imageUrl,
-        tags: req.body.tags?.split(',').map(tag => tag.trim()) || [],
+        tags: req.body.tags?.split(',').map((tag: string) => tag.trim()) || [],
         slug: req.body.slug,
         updated_at: new Date().toISOString(),
         published_at: req.body.published ? new Date().toISOString() : null
