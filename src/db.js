@@ -4,15 +4,47 @@ import slugify from 'slugify';
 
 dotenv.config();
 
+// Verify environment variables are loaded
+if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
+  console.error('Supabase credentials are missing!');
+  process.exit(1);
+}
+
+console.log('Connecting to Supabase at:', process.env.SUPABASE_URL);
+
 export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY,
   {
     auth: {
-      persistSession: false
+      persistSession: false,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    },
+    global: {
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': process.env.SUPABASE_KEY
+      }
     }
   }
 );
+
+// Test connection
+(async () => {
+  try {
+    const { data, error } = await supabase
+      .from('articles')
+      .select('*')
+      .limit(1);
+    
+    if (error) throw error;
+    console.log('Successfully connected to Supabase');
+  } catch (error) {
+    console.error('Supabase connection error:', error);
+    process.exit(1);
+  }
+})();
 
 const ITEMS_PER_PAGE = 9;
 
