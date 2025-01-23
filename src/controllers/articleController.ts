@@ -20,8 +20,18 @@ export class ArticleController {
       const totalArticles = articles.length;
       const totalPages = Math.ceil(totalArticles / limit);
 
-      res.render('home', { 
-        articles: articles.slice((page - 1) * limit, page * limit),
+      // Format dates for display
+      const formattedArticles = articles.map(article => ({
+        ...article,
+        createdAt: new Date(article.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      }));
+
+      res.render('pages/home', { 
+        articles: formattedArticles.slice((page - 1) * limit, page * limit),
         currentPage: page,
         totalPages,
         user: req.session.user
@@ -42,7 +52,20 @@ export class ArticleController {
       if (!article) {
         throw createHttpError(404, 'Article not found');
       }
-      res.render('article', { article, user: req.session.user });
+      // Format date for display
+      const formattedArticle = {
+        ...article,
+        createdAt: new Date(article.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      };
+
+      res.render('pages/article', { 
+        article: formattedArticle, 
+        user: req.session.user 
+      });
     } catch (error) {
       console.error('Error fetching article:', error);
       const status = error.status || 500;
@@ -62,8 +85,18 @@ export class ArticleController {
       }
       
       const articles = await this.articleService.searchArticles(query);
-      res.render('search', {
-        articles,
+      // Format dates for display
+      const formattedArticles = articles.map(article => ({
+        ...article,
+        createdAt: new Date(article.created_at).toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })
+      }));
+
+      res.render('partials/search', {
+        articles: formattedArticles,
         query,
         user: req.session.user
       });
