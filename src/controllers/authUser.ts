@@ -31,10 +31,10 @@ export class AuthController {
 
   public showLogin = (req: AuthenticatedRequest, res: Response): void => {
     if (req.session.user?.isAdmin) {
-      res.redirect('/pages/dashboard');
+      res.redirect('/auth/dashboard');
       return;
     }
-    res.render('/pages/login.ejs', { user: req.session.user });
+    res.render('pages/login', { user: req.session.user });
   };
 
   public login = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -43,7 +43,7 @@ export class AuthController {
       const user = await this.authService.login(email, password);
       
       if (!user) {
-        res.render('/pages/login', {
+        res.render('pages/login', {
           error: 'Invalid email or password',
           user: req.session.user
         });
@@ -51,10 +51,10 @@ export class AuthController {
       }
 
       req.session.user = user;
-      res.redirect('/pages/dashboard');
+      res.redirect('/auth/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      res.render('/pages/login', {
+      res.render('pages/login', {
         error: 'Invalid login credentials',
         user: req.session.user
       });
@@ -68,7 +68,7 @@ export class AuthController {
   };
 
   public showDashboard = (req: AuthenticatedRequest, res: Response): void => {
-    res.render('/pages/dashboard', { user: req.session.user });
+    res.render('pages/dashboard', { user: req.session.user });
   };
 
   public register = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
@@ -77,10 +77,10 @@ export class AuthController {
       const user = await this.authService.register(email, password);
       
       req.session.user = user;
-      res.redirect('/pages/dashboard');
+      res.redirect('/auth/dashboard');
     } catch (error) {
       console.error('Registration error:', error);
-      res.render('/pages/register', {
+      res.render('pages/register', {
         error: error instanceof Error ? error.message : 'Registration failed',
         user: req.session.user
       });
