@@ -7,7 +7,7 @@ import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import * as db from './db.js';
 import { errorHandler } from './middleware/errorHandler.js';
-import { AppError } from './utils/errors.js';
+import { AppError, ErrorMessages } from './utils/errors.js';
 
 // Import routes
 import authRoutes from './routes/auth.js';

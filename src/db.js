@@ -6,7 +6,12 @@ dotenv.config();
 
 export const supabase = createClient(
   process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
+  process.env.SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: false
+    }
+  }
 );
 
 const ITEMS_PER_PAGE = 9;
