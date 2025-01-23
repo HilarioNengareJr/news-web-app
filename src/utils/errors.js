@@ -1,4 +1,5 @@
 export const enum ErrorType {
+  /** Authentication related errors */
   AUTHENTICATION = 'AUTHENTICATION',
   AUTHORIZATION = 'AUTHORIZATION',
   NOT_FOUND = 'NOT_FOUND',
@@ -7,6 +8,9 @@ export const enum ErrorType {
   SERVER = 'SERVER'
 }
 
+/**
+ * Type definition for error messages structure
+ */
 interface ErrorMessagesType {
   [key: string]: {
     default: string;
@@ -55,6 +59,9 @@ export const ErrorMessages: ErrorMessagesType = {
   }
 };
 
+/**
+ * Custom error class for application-specific errors
+ */
 export class AppError extends Error {
   type: ErrorType;
   status: number;

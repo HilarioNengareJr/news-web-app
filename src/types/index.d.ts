@@ -13,6 +13,9 @@ declare namespace Express {
   }
 }
 
+/**
+ * Represents an article in the system
+ */
 interface Article {
   id: string;
   title: string;
@@ -27,6 +30,10 @@ interface Article {
   };
 }
 
+/**
+ * Represents a paginated response
+ * @template T - Type of the data being paginated
+ */
 interface PaginatedResponse<T> {
   data: T[];
   total: number;

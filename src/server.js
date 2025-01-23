@@ -16,6 +16,9 @@ import authRoutes from './routes/auth';
 // Import middleware
 import { requireAuth } from './middleware/auth';
 
+/**
+ * Extend express-session types with custom session data
+ */
 declare module 'express-session' {
   interface Session {
     user?: {
@@ -49,6 +52,9 @@ const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
 
 // Security middleware
+/**
+ * Security middleware to set HTTP headers
+ */
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');

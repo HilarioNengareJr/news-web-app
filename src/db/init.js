@@ -1,6 +1,10 @@
 import { supabase } from '../db';
 import { Article } from '../types';
 
+/**
+ * Initializes the database by creating tables and inserting sample data if needed
+ * @throws {Error} If database initialization fails
+ */
 export async function initDatabase(): Promise<void> {
   try {
     // Create articles table if it doesn't exist

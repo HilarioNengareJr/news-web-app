@@ -49,12 +49,21 @@ export const supabase = createClient(
 
 const ITEMS_PER_PAGE = 9;
 
+/**
+ * Parameters for searching articles
+ */
 interface SearchParams {
   search?: string;
   page?: number;
   tags?: string[];
 }
 
+/**
+ * Retrieves paginated articles based on search parameters
+ * @param searchParams - Optional search parameters
+ * @param page - Page number for pagination
+ * @returns Promise containing paginated articles
+ */
 export async function getArticles(
   searchParams: Partial<SearchParams> | null = null, 
   page: number = 1
