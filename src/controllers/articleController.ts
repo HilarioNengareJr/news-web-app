@@ -81,11 +81,14 @@ export class ArticleController {
       });
     } catch (error) {
       console.error('Error fetching article:', error);
-      const status = error.status || 500;
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error fetching article';
+      const session = req.session as CustomSession;
+      
       res.status(status).render('error', {
-        message: error.message || 'Error fetching article',
+        message,
         error: { status },
-        user: req.session.user
+        user: session.user
       });
     }
   };
