@@ -26,6 +26,14 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Initialize database connection
+db.initializeDB().then(() => {
+  console.log('Database connection established');
+}).catch(err => {
+  console.error('Failed to connect to database:', err);
+  process.exit(1);
+});
+
 const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
 
