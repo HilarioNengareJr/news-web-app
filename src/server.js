@@ -22,7 +22,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = parseInt(process.env.PORT || '3000', 10);
 
 // Security middleware
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -37,7 +37,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(session({
-  secret: process.env.SESSION_SECRET!,
+  secret: process.env.SESSION_SECRET as string,
   resave: false,
   saveUninitialized: false,
   cookie: {
@@ -95,9 +95,9 @@ app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFun
 // Articles listing page
 app.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const page = parseInt(req.query.page as string) || 1;
+    const page = parseInt((req.query.page as string) || '1', 10);
     const searchParams = {
-      search: req.query.search as string || null
+      search: (req.query.search as string) || null
     };
     
     const articles = await db.getArticles(searchParams, page);
