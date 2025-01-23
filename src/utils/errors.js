@@ -1,4 +1,4 @@
-export const enum ErrorType {
+export enum ErrorType {
   /** Authentication related errors */
   AUTHENTICATION = 'AUTHENTICATION',
   AUTHORIZATION = 'AUTHORIZATION',
@@ -12,6 +12,19 @@ export const enum ErrorType {
  * Type definition for error messages structure
  */
 interface ErrorMessagesType {
+  [key: string]: {
+    default: string;
+    invalid?: string;
+    expired?: string;
+    adminOnly?: string;
+    article?: string;
+    page?: string;
+    required?: string;
+    email?: string;
+    password?: string;
+    connection?: string;
+    maintenance?: string;
+  };
   [key: string]: {
     default: string;
     invalid?: string;

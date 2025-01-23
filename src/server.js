@@ -20,20 +20,6 @@ import { requireAuth } from './middleware/auth';
  * Extend express-session types with custom session data
  */
 declare module 'express-session' {
-  interface Session {
-    user?: {
-      id: string;
-      email: string;
-      role: string;
-    };
-  }
-  interface Session {
-    user?: {
-      id: string;
-      email: string;
-      role: string;
-    };
-  }
   interface SessionData {
     user?: {
       id: string;
