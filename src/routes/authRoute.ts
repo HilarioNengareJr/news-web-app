@@ -5,25 +5,21 @@
 
 'use strict'
 
-/**
- * node modules
- */
-
 import { Router } from 'express';
-
-
-/**
- * custom modules
- */
 import { AuthController } from '../controllers/authUser';
 import { isAuthenticated } from '../middlewares/authUserMiddleware';
+import { validateLogin, validateRegistration } from '../middlewares/validationMiddleware';
 
 const authRouter = Router();
 const authController = new AuthController();
 
-authRouter.get('/pages/login', authController.showLogin);
-authRouter.post('/pages/login', authController.login);
-authRouter.get('/auth/logout', authController.logout);
-authRouter.get('/pages/dashboard', isAuthenticated, authController.showDashboard);
+// Public routes
+authRouter.get('/login', authController.showLogin);
+authRouter.post('/login', validateLogin, authController.login);
+authRouter.post('/register', validateRegistration, authController.register);
+
+// Protected routes
+authRouter.get('/logout', isAuthenticated, authController.logout);
+authRouter.get('/dashboard', isAuthenticated, authController.showDashboard);
 
 export default authRouter;
