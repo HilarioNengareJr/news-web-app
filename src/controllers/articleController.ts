@@ -3,6 +3,15 @@ import { ArticleService } from '../services/articleService';
 import { AuthenticatedRequest } from '../middlewares/AuthenticatedRequest';
 import { Article } from '../types/articleType';
 import createHttpError from 'http-errors';
+import { Session } from 'express-session';
+
+interface CustomSession extends Session {
+  user?: {
+    id: string;
+    email: string;
+    isAdmin: boolean;
+  };
+}
 
 export class ArticleController {
   private articleService: ArticleService;
@@ -30,11 +39,12 @@ export class ArticleController {
         })
       }));
 
+      const session = req.session as CustomSession;
       res.render('pages/home', { 
         articles: formattedArticles.slice((page - 1) * limit, page * limit),
         currentPage: page,
         totalPages,
-        user: req.session.user,
+        user: session.user,
         hideSearch: false
       });
     } catch (error) {
@@ -63,9 +73,10 @@ export class ArticleController {
         })
       };
 
+      const session = req.session as CustomSession;
       res.render('pages/article', { 
         article: formattedArticle, 
-        user: req.session.user,
+        user: session.user,
         hideSearch: true
       });
     } catch (error) {
@@ -97,10 +108,11 @@ export class ArticleController {
         })
       }));
 
+      const session = req.session as CustomSession;
       res.render('partials/search', {
         articles: formattedArticles,
         query,
-        user: req.session.user,
+        user: session.user,
         hideSearch: true
       });
     } catch (error) {
