@@ -11,6 +11,14 @@ declare namespace Express {
       role: string;
     };
   }
+
+  export interface Session {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+    };
+  }
 }
 
 /**

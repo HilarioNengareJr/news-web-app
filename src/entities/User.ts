@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
 import { ArticleEntity } from './Article';
+import * as bcrypt from 'bcryptjs';
 
 @Entity('users')
 export class UserEntity {
@@ -12,7 +13,7 @@ export class UserEntity {
   @Column({ name: 'password_hash' })
   passwordHash: string;
 
-  @Column({ default: 'admin' })
+  @Column({ default: 'user' })
   role: string;
 
   @CreateDateColumn({ name: 'created_at' })
@@ -23,4 +24,16 @@ export class UserEntity {
 
   @OneToMany(() => ArticleEntity, article => article.author)
   articles: ArticleEntity[];
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async hashPassword() {
+    if (this.passwordHash) {
+      this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
+    }
+  }
+
+  async comparePassword(attempt: string): Promise<boolean> {
+    return bcrypt.compare(attempt, this.passwordHash);
+  }
 }
