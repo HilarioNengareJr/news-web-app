@@ -13,8 +13,8 @@ import { Response} from 'express';
 /**
  * custom modules
  */
-import { authService } from '../services/authService';
-import { AuthenticatedRequest } from '../middleware/auth_user.middleware';
+import { AuthService } from '../services/authService';
+import { AuthenticatedRequest } from '../middlewares/AuthenticatedRequest';
 import { z } from 'zod';
 
 const loginSchema = z.object({
@@ -23,27 +23,27 @@ const loginSchema = z.object({
 });
 
 export class AuthController {
-  private auth.service: auth.service;
+  private authService: AuthService;
 
   constructor() {
-    this.auth.service = new auth.service();
+    this.authService = new AuthService();
   }
 
   public showLogin = (req: AuthenticatedRequest, res: Response): void => {
     if (req.session.user?.isAdmin) {
-      res.redirect('/admin/dashboard');
+      res.redirect('/pages/dashboard');
       return;
     }
-    res.render('admin/login', { user: req.session.user });
+    res.render('/pages/login.ejs', { user: req.session.user });
   };
 
   public login = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
     try {
       const { email, password } = loginSchema.parse(req.body);
-      const user = await this.auth.service.login(email, password);
+      const user = await this.authService.login(email, password);
       
       if (!user) {
-        res.render('admin/login', {
+        res.render('/pages/login', {
           error: 'Invalid email or password',
           user: req.session.user
         });
@@ -51,10 +51,10 @@ export class AuthController {
       }
 
       req.session.user = user;
-      res.redirect('/admin/dashboard');
+      res.redirect('/pages/dashboard');
     } catch (error) {
       console.error('Login error:', error);
-      res.render('admin/login', {
+      res.render('/pages/login', {
         error: 'Invalid login credentials',
         user: req.session.user
       });
@@ -68,6 +68,6 @@ export class AuthController {
   };
 
   public showDashboard = (req: AuthenticatedRequest, res: Response): void => {
-    res.render('admin/dashboard', { user: req.session.user });
+    res.render('/pages/dashboard', { user: req.session.user });
   };
 }
