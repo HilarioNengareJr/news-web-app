@@ -425,4 +425,35 @@ body {
 @keyframes scaleIn {
     from { transform: scale(0.98); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
+}/* Footer positioning */
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+/* Login page specific styles */
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.login-page main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
