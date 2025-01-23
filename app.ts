@@ -110,8 +110,24 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
  * Start the server
  */
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
+
+// Check if port is available
+const server = app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
+});
+
+server.on('error', (error: NodeJS.ErrnoException) => {
+  if (error.code === 'EADDRINUSE') {
+    console.error(`Port ${PORT} is already in use.`);
+    console.log('Trying to use an alternative port...');
+    const altPort = parseInt(PORT as string) + 1;
+    app.listen(altPort, () => {
+      console.log(`Server running at http://localhost:${altPort}`);
+    });
+  } else {
+    console.error('Server error:', error);
+    process.exit(1);
+  }
 });
 
 export default app;
