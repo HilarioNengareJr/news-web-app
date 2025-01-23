@@ -16,12 +16,14 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 // Test Supabase connection
 async function testConnection() {
   try {
+    // Test connection by querying a system table
     const { data, error } = await supabase
-      .rpc('test_connection')
-      .single();
+      .from('pg_stat_activity')
+      .select('*')
+      .limit(1);
     
     if (error) throw error;
-    console.log('Connected to Supabase successfully:', data);
+    console.log('Connected to Supabase successfully');
   } catch (error) {
     console.error('Supabase connection error:', error);
     process.exit(1);
