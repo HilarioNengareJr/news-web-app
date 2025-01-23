@@ -81,10 +81,10 @@ app.use(isAuthenticated);
 app.use('/articles', articlesRouter);
 
 /** 
- * Home page route 
+ * Home page route - Redirect to articles 
  */ 
 app.get('/', (req: Request, res: Response) => {
-  res.render('index', { title: 'News App Home' });
+  res.redirect('/articles');
 });
 
 // 404 handler
