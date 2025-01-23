@@ -120,11 +120,14 @@ export class ArticleController {
       });
     } catch (error) {
       console.error('Error searching articles:', error);
-      const status = error.status || 500;
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error searching articles';
+      const session = req.session as CustomSession;
+      
       res.status(status).render('error', {
-        message: error.message || 'Error searching articles',
+        message,
         error: { status },
-        user: req.session.user
+        user: session.user
       });
     }
   };
@@ -140,7 +143,7 @@ export class ArticleController {
         content: req.body.content,
         excerpt: req.body.excerpt,
         imageUrl: req.body.imageUrl,
-        tags: req.body.tags?.split(',').map(tag => tag.trim()) || [],
+        tags: req.body.tags?.split(',').map((tag: string) => tag.trim()) || [],
         author: req.session.user.email,
         slug: req.body.slug,
         author_id: req.session.user.id,
@@ -153,11 +156,14 @@ export class ArticleController {
       res.redirect(`/articles/article/${newArticle.id}`);
     } catch (error) {
       console.error('Error creating article:', error);
-      const status = error.status || 500;
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error creating article';
+      const session = req.session as CustomSession;
+      
       res.status(status).render('error', {
-        message: error.message || 'Error creating article',
+        message,
         error: { status },
-        user: req.session.user
+        user: session.user
       });
     }
   };
@@ -183,11 +189,14 @@ export class ArticleController {
       res.redirect(`/articles/article/${updatedArticle.id}`);
     } catch (error) {
       console.error('Error updating article:', error);
-      const status = error.status || 500;
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error updating article';
+      const session = req.session as CustomSession;
+      
       res.status(status).render('error', {
-        message: error.message || 'Error updating article',
+        message,
         error: { status },
-        user: req.session.user
+        user: session.user
       });
     }
   };
@@ -202,11 +211,14 @@ export class ArticleController {
       res.redirect('/articles');
     } catch (error) {
       console.error('Error deleting article:', error);
-      const status = error.status || 500;
+      const status = error instanceof Error && 'status' in error ? (error as any).status : 500;
+      const message = error instanceof Error ? error.message : 'Error deleting article';
+      const session = req.session as CustomSession;
+      
       res.status(status).render('error', {
-        message: error.message || 'Error deleting article',
+        message,
         error: { status },
-        user: req.session.user
+        user: session.user
       });
     }
   };
