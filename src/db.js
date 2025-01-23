@@ -1,35 +1,32 @@
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
-import slugify from 'slugify';
-import { Article, PaginatedResponse } from '../types';
+import { createConnection, getRepository } from 'typeorm';
+import { ArticleEntity } from './entities/Article';
+import { UserEntity } from './entities/User';
+import { PaginatedResponse } from '../types';
 
-dotenv.config();
+export async function initializeDB() {
+  try {
+    const connection = await createConnection({
+      type: 'postgres',
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '5432', 10),
+      username: process.env.DB_USER || 'postgres',
+      password: process.env.DB_PASSWORD || 'enviolata79',
+      database: process.env.DB_NAME || 'news_db',
+      entities: [ArticleEntity, UserEntity],
+      synchronize: true,
+      logging: true
+    });
 
-// Verify environment variables are loaded
-if (!process.env.SUPABASE_URL || !process.env.SUPABASE_KEY) {
-  console.error('Supabase credentials are missing!');
-  process.exit(1);
+    console.log('Database connection established');
+    return connection;
+  } catch (error) {
+    console.error('Database connection error:', error);
+    process.exit(1);
+  }
 }
 
-console.log('Connecting to Supabase at:', process.env.SUPABASE_URL);
-
-export const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY,
-  {
-    auth: {
-      persistSession: false,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    },
-    global: {
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': process.env.SUPABASE_KEY
-      }
-    }
-  }
-);
+export const articleRepository = () => getRepository(ArticleEntity);
+export const userRepository = () => getRepository(UserEntity);
 
 // Test connection
 (async () => {

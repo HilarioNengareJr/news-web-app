@@ -1,8 +1,8 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
-import { User } from './User';
+import { UserEntity } from './User';
 
-@Entity()
-export class Article {
+@Entity('articles')
+export class ArticleEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -21,12 +21,12 @@ export class Article {
   @Column('text', { array: true })
   tags: string[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'published_at' })
   publishedAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @ManyToOne(() => User, user => user.articles)
-  author: User;
+  @ManyToOne(() => UserEntity, user => user.articles)
+  author: UserEntity;
 }

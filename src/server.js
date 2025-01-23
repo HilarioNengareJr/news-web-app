@@ -5,8 +5,8 @@ import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
-import * as db from './db';
-import { initDatabase } from './db/init';
+import { initializeDB } from './db';
+import { articleRepository, userRepository } from './db';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError, ErrorMessages } from './utils/errors';
 
@@ -201,7 +201,7 @@ app.use(errorHandler);
 // Initialize database and start server
 (async () => {
   try {
-    await initDatabase();
+    await initializeDB();
     app.listen(port, () => {
       console.log(`Server running at http://localhost:${port}`);
     });

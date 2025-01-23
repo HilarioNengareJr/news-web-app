@@ -1,26 +1,26 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany } from 'typeorm';
-import { Article } from './Article';
+import { ArticleEntity } from './Article';
 
-@Entity()
-export class User {
+@Entity('users')
+export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ name: 'password_hash' })
   passwordHash: string;
 
   @Column({ default: 'admin' })
   role: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
 
-  @OneToMany(() => Article, article => article.author)
-  articles: Article[];
+  @OneToMany(() => ArticleEntity, article => article.author)
+  articles: ArticleEntity[];
 }
