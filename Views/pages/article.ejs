@@ -1,0 +1,40 @@
+<%- include('partials/head', { 
+  title: article.title,
+  description: article.excerpt,
+  hideSearch: true
+}) %>
+
+<main class="container py-5">
+  <article>
+    <div class="mb-5">
+      <div class="mb-3">
+        <% article.tags.forEach(tag => { %>
+          <span class="badge bg-secondary me-2"><%= tag %></span>
+        <% }) %>
+      </div>
+      <h1 class="display-4 fw-bold mb-3"><%= article.title %></h1>
+      <div class="text-muted mb-4">
+        By <%= article.author %> • <%= article.createdAt %>
+      </div>
+      <img src="<%= article.imageUrl %>" class="img-fluid mb-4 w-100" style="max-height: 500px; object-fit: cover;" alt="<%= article.title %>">
+    </div>
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="fs-5 lh-lg">
+          <%- article.content %>
+        </div>
+        <div class="text-center mt-5">
+          <a href="/" class="btn btn-outline-primary px-4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+            </svg>
+            Back to Home
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</main>
+
+<%- include('partials/footer') %>

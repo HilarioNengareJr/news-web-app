@@ -1,0 +1,52 @@
+<%- include('partials/head', { 
+  title: 'News App - Latest News',
+  description: 'Stay updated with the latest news and articles'
+}) %>
+
+<main class="container py-5">
+  <!-- Featured Article -->
+  <div class="mb-5">
+    <div class="card border-0 bg-light">
+      <img src="<%= articles[0].imageUrl %>" class="card-img-top" alt="<%= articles[0].title %>" style="height: 400px; object-fit: cover;">
+      <div class="card-body p-4">
+        <div class="mb-3">
+          <% articles[0].tags.forEach(tag => { %>
+            <span class="badge bg-secondary me-2"><%= tag %></span>
+          <% }) %>
+        </div>
+        <h1 class="display-4 fw-bold mb-3"><%= articles[0].title %></h1>
+        <p class="lead mb-4"><%= articles[0].excerpt %></p>
+        <div class="text-muted mb-4">
+          By <%= articles[0].author %> • <%= articles[0].createdAt %>
+        </div>
+        <a href="/article/<%= articles[0].id %>" class="btn btn-primary">Read More</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Article Grid -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <% articles.slice(1).forEach(article => { %>
+      <div class="col">
+        <div class="card h-100 border-0 shadow-sm">
+          <img src="<%= article.imageUrl %>" class="card-img-top" alt="<%= article.title %>" style="height: 200px; object-fit: cover;">
+          <div class="card-body">
+            <div class="mb-2">
+              <% article.tags.forEach(tag => { %>
+                <span class="badge bg-secondary me-1"><%= tag %></span>
+              <% }) %>
+            </div>
+            <h5 class="card-title fw-bold"><%= article.title %></h5>
+            <p class="card-text text-muted"><%= article.excerpt %></p>
+            <div class="text-muted small mb-3">
+              By <%= article.author %> • <%= article.createdAt %>
+            </div>
+            <a href="/article/<%= article.id %>" class="btn btn-primary">Read More</a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  </div>
+</main>
+
+<%- include('partials/footer') %>
