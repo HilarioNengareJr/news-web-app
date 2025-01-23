@@ -11,15 +11,22 @@ if (!supabaseUrl || !supabaseKey) {
   throw new Error('Supabase URL and Key must be defined in .env');
 }
 
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: true
+  }
+});
 
 // Test Supabase connection
 async function testConnection() {
   try {
-    // Test connection with a simple query
+    // Test connection by checking if we can query the database
     const { data, error } = await supabase
-      .rpc('version')
-      .single();
+      .from('articles')
+      .select('id')
+      .limit(1);
     
     if (error) throw error;
     console.log('Connected to Supabase successfully');
