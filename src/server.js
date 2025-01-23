@@ -5,10 +5,10 @@ import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
-import { initializeDB } from './db';
-import { articleRepository, userRepository } from './db';
+import { initializeDB, getArticles, getArticleBySlug } from './db';
 import { errorHandler } from './middleware/errorHandler';
 import { AppError, ErrorMessages } from './utils/errors';
+import { Article } from './types';
 
 // Import routes
 import authRoutes from './routes/auth';
