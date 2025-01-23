@@ -16,6 +16,16 @@ import authRoutes from './routes/auth';
 // Import middleware
 import { requireAuth } from './middleware/auth';
 
+declare module 'express-session' {
+  interface SessionData {
+    user?: {
+      id: string;
+      email: string;
+      role: string;
+    };
+  }
+}
+
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
