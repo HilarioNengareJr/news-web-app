@@ -1,7 +1,7 @@
 import { createConnection, getRepository } from 'typeorm';
 import { ArticleEntity } from './entities/Article';
 import { UserEntity } from './entities/User';
-import { PaginatedResponse } from '../types';
+import { PaginatedResponse, Article } from '../types';
 import { Article } from '../types';
 
 const ITEMS_PER_PAGE = 9;
@@ -31,7 +31,7 @@ export async function initializeDB() {
 export const articleRepository = () => getRepository(ArticleEntity);
 export const userRepository = () => getRepository(UserEntity);
 
-interface SearchParams {
+export interface SearchParams {
   search?: string;
   page?: number;
   tags?: string[];

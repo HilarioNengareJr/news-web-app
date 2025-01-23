@@ -19,15 +19,7 @@ import { requireAuth } from './middleware/auth';
 /**
  * Extend express-session types with custom session data
  */
-declare module 'express-session' {
-  interface SessionData {
-    user?: {
-      id: string;
-      email: string;
-      role: string;
-    };
-  }
-}
+// This declaration is now in src/types/index.d.ts
 
 dotenv.config();
 
@@ -41,7 +33,7 @@ const port = parseInt(process.env.PORT || '3000', 10);
 /**
  * Security middleware to set HTTP headers
  */
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
   res.setHeader('X-XSS-Protection', '1; mode=block');
@@ -73,14 +65,14 @@ app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 
 // Add middleware to determine if search should be shown
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.locals.showSearch = req.path === '/articles' && !req.path.startsWith('/login');
   res.locals.isAdmin = !!req.session.user;
   next();
 });
 
 // API error handler
-app.use('/api', (err: unknown, req: Request, res: Response, next: NextFunction) => {
+app.use('/api', (err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
   if (!(err instanceof Error)) {
     err = new Error('Unknown error occurred');
   }
@@ -97,7 +89,7 @@ app.use('/api', (err: unknown, req: Request, res: Response, next: NextFunction) 
 app.use('/', authRoutes);
 
 // Admin routes
-app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+app.get('/admin', requireAuth, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const articles = await db.getArticles();
     res.format({
@@ -114,7 +106,7 @@ app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFun
 });
 
 // Articles listing page
-app.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
+app.get('/articles', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const page = parseInt((req.query.page as string) || '1', 10);
     const searchParams = {
@@ -145,7 +137,7 @@ app.get('/articles', async (req: Request, res: Response, next: NextFunction) => 
 });
 
 // Home page
-app.get('/', async (req: Request, res: Response, next: NextFunction) => {
+app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const articles = await db.getArticles(null, 1);
     res.format({
@@ -170,7 +162,7 @@ app.get('/', async (req: Request, res: Response, next: NextFunction) => {
 });
 
 // Single article page
-app.get('/article/:slug', async (req: Request, res: Response, next: NextFunction) => {
+app.get('/article/:slug', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const article = await db.getArticleBySlug(req.params.slug);
     if (!article) {

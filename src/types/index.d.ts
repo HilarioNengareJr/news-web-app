@@ -16,15 +16,15 @@ declare namespace Express {
 /**
  * Represents an article in the system
  */
-interface Article {
+export interface Article {
   id: string;
   title: string;
   content: string;
   slug: string;
-  author_id: string;
+  authorId: string;
   tags: string[];
-  published_at: string;
-  updated_at: string;
+  publishedAt: Date;
+  updatedAt: Date;
   author?: {
     email: string;
   };
