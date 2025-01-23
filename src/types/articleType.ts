@@ -13,4 +13,13 @@ export interface Article {
     tags: string[];
     author: string;
     createdAt: string;
-  }
+  }export interface Article {
+  id: string;
+  title: string;
+  content: string;
+  slug: string;
+  author_id: string | null;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
