@@ -1,4 +1,9 @@
-module.exports = {
+import { ConnectionOptions } from 'typeorm';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const config: ConnectionOptions = {
   type: 'postgres',
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432', 10),
@@ -16,3 +21,5 @@ module.exports = {
     subscribersDir: 'src/subscribers'
   }
 };
+
+export default config;

@@ -1,4 +1,5 @@
 import { createConnection, getRepository } from 'typeorm';
+import config from '../ormconfig';
 import { ArticleEntity } from './entities/Article';
 import { UserEntity } from './entities/User';
 import { PaginatedResponse, Article } from '../types';
@@ -8,17 +9,7 @@ const ITEMS_PER_PAGE = 9;
 
 export async function initializeDB() {
   try {
-    const connection = await createConnection({
-      type: 'postgres',
-      host: process.env.DB_HOST || 'localhost',
-      port: parseInt(process.env.DB_PORT || '5432', 10),
-      username: process.env.DB_USER || 'postgres',
-      password: process.env.DB_PASSWORD || 'enviolata79',
-      database: process.env.DB_NAME || 'news_db',
-      entities: [ArticleEntity, UserEntity],
-      synchronize: true,
-      logging: true
-    });
+    const connection = await createConnection(config);
 
     console.log('Database connection established');
     return connection;
