@@ -52,7 +52,7 @@ export async function initDatabase(): Promise<void> {
     }
 
     // Add sample articles
-    const sampleArticles: Partial<Article>[] = [
+    const sampleArticles: Omit<Article, 'id' | 'slug' | 'publishedAt' | 'updatedAt' | 'author'>[] = [
       {
         title: 'Introduction to Modern Web Development',
         content: 'Web development has evolved significantly...',
@@ -80,11 +80,8 @@ export async function initDatabase(): Promise<void> {
     if (insertError) throw insertError;
 
     console.log('Successfully initialized database with sample articles');
-  } catch (error: unknown) {
+  } catch (error) {
     console.error('Error initializing database:', error);
-    if (error instanceof Error) {
-      throw error;
-    }
-    throw new Error('Unknown error occurred during database initialization');
+    throw error instanceof Error ? error : new Error('Unknown error occurred during database initialization');
   }
 }
