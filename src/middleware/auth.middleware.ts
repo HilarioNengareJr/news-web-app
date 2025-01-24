@@ -1,16 +1,23 @@
-import { authService } from '../services/auth.js';
-import { AppError, ErrorMessages } from '../utils/errors.js';
+import { Request, Response, NextFunction } from 'express';
+import { AppError, ErrorMessages } from '../utils/errors';
+import { Session } from '../types';
 
-export const requireAuth = async (req, res, next) => {
-  // Check if user is authenticated via session
+export const requireAuth = async (
+  req: Request & { session: Session },
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
   if (!req.session.user || req.session.user.role !== 'admin') {
     return res.redirect('/login');
   }
-  
   next();
 };
 
-export const validateLoginInput = (req, res, next) => {
+export const validateLoginInput = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
   const { email, password } = req.body;
   
   if (!email || !password) {
