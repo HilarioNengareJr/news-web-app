@@ -192,7 +192,7 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
           searchParams: null,
           pagination: {
             total: publishedArticles.length,
-            totalPages: Math.ceil(publishedArticles.length / ITEMS_PER_PAGE),
+            totalPages: Math.ceil(publishedArticles.length / 10), // Use fixed page size
             currentPage: 1
           }
         });
