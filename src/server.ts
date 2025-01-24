@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import { pool } from './db/connection';
-import * as userService from './entities/User';
+import { findUserByEmail } from './entities/User';
 import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
 import { Article } from './types';
@@ -109,13 +109,27 @@ app.get('/login', (req, res) => {
 });
 
 // Login form submission
-app.post('/login', validateLoginInput, (req, res) => {
-  req.session.user = {
-    id: 'admin', // This should be replaced with actual user ID from database
-    email: req.body.email,
-    role: 'admin'
-  };
-  res.redirect('/admin');
+app.post('/login', validateLoginInput, async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    // Get actual user from database
+    const user = await userService.findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    req.session.user = {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    };
+    
+    res.redirect('/admin');
+  } catch (error) {
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
+  }
 });
 
 // Logout
