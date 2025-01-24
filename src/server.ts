@@ -224,14 +224,15 @@ app.use(errorHandler);
 // Initialize database and start server
 (async () => {
   try {
-    const connection = await initializeDB();
-    
+    // Test database connection
+    await pool.query('SELECT NOW()');
+    console.log('Database connection established');
     
     app.listen(port, () => {
       console.log(`Server running at http://localhost:${port}`);
     });
   } catch (error) {
-    console.error('Failed to initialize database:', error);
+    console.error('Failed to connect to database:', error);
     process.exit(1);
   }
 })();
