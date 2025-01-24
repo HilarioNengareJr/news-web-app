@@ -1,4 +1,5 @@
 import { getRepository } from 'typeorm';
+import { userService } from './user.service';
 import { UserEntity } from '../entities/User';
 import { AppError } from '../utils/errors';
 

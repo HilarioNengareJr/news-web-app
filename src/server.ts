@@ -13,6 +13,7 @@ import { Article } from './types';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
+import { authService } from '../services/auth.service';
 
 // Import middleware
 import { requireAuth } from './middleware/auth';
