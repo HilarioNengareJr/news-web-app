@@ -100,6 +100,34 @@ app.use('/api', (err: unknown, req: express.Request, res: express.Response, next
 // Auth routes
 app.use('/', authRoutes);
 
+// Login page
+app.get('/login', (req, res) => {
+  res.render('login', { 
+    error: null,
+    email: ''
+  });
+});
+
+// Login form submission
+app.post('/login', validateLoginInput, (req, res) => {
+  req.session.user = {
+    id: 'admin', // This should be replaced with actual user ID from database
+    email: req.body.email,
+    role: 'admin'
+  };
+  res.redirect('/admin');
+});
+
+// Logout
+app.post('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Error destroying session:', err);
+    }
+    res.redirect('/');
+  });
+});
+
 // Admin routes
 app.get('/admin', requireAuth, async (req, res, next) => {
   try {
