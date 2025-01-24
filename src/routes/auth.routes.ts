@@ -13,6 +13,33 @@ router.post('/login', async (req, res, next) => {
       throw AppError.validation('Email and password are required');
     }
 
+    // Check for default admin credentials
+    if (email === 'admin@news.com') {
+      const { data: user } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)
+        .single();
+
+      if (!user) {
+        throw AppError.authentication('Invalid email or password');
+      }
+
+      const validPassword = await bcrypt.compare(password, user.password_hash);
+      if (!validPassword) {
+        throw AppError.authentication('Invalid email or password');
+      }
+
+      req.session.user = {
+        id: user.id,
+        email: user.email,
+        role: user.role
+      };
+
+      return res.redirect('/admin');
+    }
+
+    // Regular user login
     const { success, user } = await authService.signIn(email, password);
 
     if (!success || !user) {

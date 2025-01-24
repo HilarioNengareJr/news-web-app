@@ -1,5 +1,6 @@
 import { supabase } from '../db';
 import { Article } from '../types';
+import bcrypt from 'bcryptjs';
 
 /**
  * Initializes the database by creating tables and inserting sample data if needed
@@ -12,6 +13,32 @@ export async function initDatabase(): Promise<void> {
       .rpc('create_articles_table_if_not_exists');
 
     if (tableError) throw tableError;
+
+    // Add default admin user if not exists
+    const defaultAdmin = {
+      email: 'admin@news.com',
+      password: await bcrypt.hash('admin123', 10),
+      role: 'admin'
+    };
+
+    const { data: existingAdmin } = await supabase
+      .from('users')
+      .select('*')
+      .eq('email', defaultAdmin.email)
+      .single();
+
+    if (!existingAdmin) {
+      const { error: userError } = await supabase
+        .from('users')
+        .insert([{
+          email: defaultAdmin.email,
+          password_hash: defaultAdmin.password,
+          role: defaultAdmin.role
+        }]);
+
+      if (userError) throw userError;
+      console.log('Default admin user created');
+    }
 
     // Check if we already have articles
     const { data: existingArticles } = await supabase

@@ -107,11 +107,35 @@ app.get('/admin', requireAuth, async (req: express.Request, res: express.Respons
         res.json(articles);
       },
       'text/html': () => {
-        res.render('admin-dashboard', { articles: articles.data });
+        res.render('admin-dashboard', { 
+          articles: articles.data,
+          user: req.session.user
+        });
       }
     });
   } catch (error) {
     next(AppError.database('Unable to load admin dashboard'));
+  }
+});
+
+// Article creation route
+app.post('/articles', requireAuth, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+  try {
+    const { title, content, tags } = req.body;
+    
+    if (!title || !content) {
+      throw AppError.validation('Title and content are required');
+    }
+
+    const article = await db.createArticle({
+      title,
+      content,
+      tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+    }, req.session.user!.id);
+
+    res.redirect('/admin');
+  } catch (error) {
+    next(error);
   }
 });
 
