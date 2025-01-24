@@ -5,12 +5,11 @@ import { default as bcrypt } from 'bcryptjs';
 let ADMIN_CREDENTIALS: { email: string; passwordHash: string } | null = null;
 
 async function initAdminCredentials(): Promise<{ email: string; passwordHash: string } | null> {
-  if (!ADMIN_CREDENTIALS) {
-    ADMIN_CREDENTIALS = {
-      email: 'admin@example.com',
-      passwordHash: await bcrypt.hash('password', 10)
-    };
-  }
+  ADMIN_CREDENTIALS = {
+    email: 'admin@example.com',
+    passwordHash: await bcrypt.hash('password', 10) 
+  };
+  
   return ADMIN_CREDENTIALS;
 }
 
@@ -32,6 +31,7 @@ export const validateLoginInput = async (
 ): Promise<void> => {
   const { email, password } = req.body;
 
+  // Ensure email and password are provided
   if (!email || !password) {
     return res.render('login', { 
       error: 'Email and password are required',
@@ -39,14 +39,19 @@ export const validateLoginInput = async (
     });
   }
 
+  // Initialize credentials (this will always set the default credentials)
   const credentials = await initAdminCredentials();
-  if (credentials === null || email !== credentials.email || 
-      !(await bcrypt.compare(password, credentials.passwordHash))) {
+
+  // Check if email and hashed password match
+  if (credentials === null || email !== credentials.email || !(await bcrypt.compare(password, credentials.passwordHash))) {
+    // If they do not match, return error message
     return res.render('login', {
       error: 'Invalid email or password',
       email
     });
   }
+  req.session.user = { email: credentials.email }; 
+  res.redirect('/admin'); 
 
   next();
 };
