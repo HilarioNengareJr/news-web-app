@@ -12,7 +12,7 @@ import { AppError, ErrorMessages } from './utils/errors';
 import { Article } from './types';
 
 // Import routes
-import authRoutes from './routes/auth';
+import authRoutes from './routes/auth.routes';
 
 // Import middleware
 import { requireAuth } from './middleware/auth';
