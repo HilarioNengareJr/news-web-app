@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 import { ErrorResponse } from '../types';
+import { DatabaseError } from 'pg';
 
 /**
  * Error handling middleware that formats and returns consistent error responses
@@ -15,6 +16,12 @@ export function errorHandler(
   res: Response<ErrorResponse>,
   next: NextFunction
 ): void {
+  // Handle database errors
+  if (err instanceof DatabaseError) {
+    console.error('Database error:', err);
+    err = AppError.database('Database operation failed');
+  }
+
   // Handle unexpected errors
   if (!(err instanceof AppError)) {
     console.error('Unexpected error:', err);

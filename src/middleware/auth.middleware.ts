@@ -1,16 +1,39 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError, ErrorMessages } from '../utils/errors';
 import { Session } from '../types';
+import { pool } from '../db/connection';
 
 export const requireAuth = async (
   req: Request & { session: Session },
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!req.session.user || req.session.user.role !== 'admin') {
+  if (!req.session.user) {
     return res.redirect('/login');
   }
-  next();
+
+  // Verify user still exists in database
+  try {
+    const result = await pool.query(
+      'SELECT id, role FROM users WHERE id = $1',
+      [req.session.user.id]
+    );
+    
+    if (result.rows.length === 0) {
+      req.session.destroy(() => {});
+      return res.redirect('/login');
+    }
+
+    if (result.rows[0].role !== 'admin') {
+      return res.status(403).render('error', {
+        message: 'Access denied. Admin privileges required.'
+      });
+    }
+
+    next();
+  } catch (error) {
+    next(AppError.database('Failed to verify user'));
+  }
 };
 
 export const validateLoginInput = (
