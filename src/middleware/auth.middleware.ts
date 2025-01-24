@@ -8,8 +8,8 @@ let ADMIN_CREDENTIALS: { email: string; passwordHash: string } | null = null;
 async function initAdminCredentials() {
   if (!ADMIN_CREDENTIALS) {
     ADMIN_CREDENTIALS = {
-      email: 'foo@email.com',
-      passwordHash: await bcrypt.hash('admin123', 10)
+      email: 'admin@example.com',
+      passwordHash: await bcrypt.hash('password', 10)
     };
   }
   return ADMIN_CREDENTIALS;
