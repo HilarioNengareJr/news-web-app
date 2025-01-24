@@ -1,6 +1,7 @@
-import { supabase } from '../db.js';
+import { initializeDB, createArticle } from '../db.js';
 import { Article } from '../types/index.js';
 import bcrypt from 'bcryptjs';
+import { userRepository } from '../db.js';
 
 /**
  * Initializes the database by creating tables and inserting sample data if needed
@@ -9,10 +10,8 @@ import bcrypt from 'bcryptjs';
 export async function initDatabase(): Promise<void> {
   try {
     // Create articles table if it doesn't exist
-    const { error: tableError } = await supabase
-      .rpc('create_articles_table_if_not_exists');
-
-    if (tableError) throw tableError;
+    // Initialize TypeORM connection
+    await initializeDB();
 
     // Add default admin user if not exists
     const defaultAdmin = {
@@ -28,15 +27,13 @@ export async function initDatabase(): Promise<void> {
       .single();
 
     if (!existingAdmin) {
-      const { error: userError } = await supabase
-        .from('users')
-        .insert([{
-          email: defaultAdmin.email,
-          password_hash: defaultAdmin.password,
-          role: defaultAdmin.role
-        }]);
-
-      if (userError) throw userError;
+      const userRepo = userRepository();
+      const adminUser = userRepo.create({
+        email: defaultAdmin.email,
+        passwordHash: defaultAdmin.password,
+        role: defaultAdmin.role
+      });
+      await userRepo.save(adminUser);
       console.log('Default admin user created');
     }
 
@@ -73,11 +70,9 @@ export async function initDatabase(): Promise<void> {
       }
     ];
 
-    const { error: insertError } = await supabase
-      .from('articles')
-      .insert(sampleArticles);
-
-    if (insertError) throw insertError;
+    for (const article of sampleArticles) {
+      await createArticle(article, '00000000-0000-0000-0000-000000000001');
+    }
 
     console.log('Successfully initialized database with sample articles');
   } catch (error) {
