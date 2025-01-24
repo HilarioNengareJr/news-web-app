@@ -10,7 +10,7 @@ import * as userService from './entities/User';
 import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
 import { Article } from './types';
-import * as articleService from './services/article';
+import * as articleService from './services/article.service';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
