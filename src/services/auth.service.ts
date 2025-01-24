@@ -1,5 +1,5 @@
 import { getRepository } from 'typeorm';
-import { UserEntity } from '../entities/User.ts';
+import { UserEntity } from '../entities/User.js';
 import { AppError } from '../utils/errors';
 
 export const authService = {
