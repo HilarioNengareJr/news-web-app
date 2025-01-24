@@ -1,14 +1,14 @@
 import { pool } from '../db/connection';
 import * as bcrypt from 'bcryptjs';
 
-export interface User {
+export interface UserEntity {
   id: string;
   email: string;
   passwordHash: string;
   role: string;
 }
 
-export async function createUser(email: string, password: string): Promise<User> {
+export async function createUser(email: string, password: string): Promise<UserEntity> {
   const passwordHash = await bcrypt.hash(password, 10);
   const result = await pool.query<User>(
     `INSERT INTO users (email, password_hash) 
@@ -19,7 +19,7 @@ export async function createUser(email: string, password: string): Promise<User>
   return result.rows[0];
 }
 
-export async function findUserByEmail(email: string): Promise<User | null> {
+export async function findUserByEmail(email: string): Promise<UserEntity | null> {
   const result = await pool.query<User>(
     `SELECT id, email, password_hash as "passwordHash", role
      FROM users WHERE email = $1`,
@@ -28,11 +28,11 @@ export async function findUserByEmail(email: string): Promise<User | null> {
   return result.rows[0] || null;
 }
 
-export async function comparePassword(user: User, password: string): Promise<boolean> {
+export async function comparePassword(user: UserEntity, password: string): Promise<boolean> {
   return bcrypt.compare(password, user.passwordHash);
 }
 
-export async function updateUser(id: string, updates: Partial<User>): Promise<User> {
+export async function updateUser(id: string, updates: Partial<UserEntity>): Promise<UserEntity> {
   const result = await pool.query<User>(
     `UPDATE users 
      SET email = COALESCE($1, email),
