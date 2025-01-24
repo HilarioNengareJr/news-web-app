@@ -67,7 +67,7 @@ app.use(session({
 // Static files
 app.use(express.static(join(__dirname, 'public')));
 
-// Favicon handler
+
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end();
 });
@@ -75,8 +75,6 @@ app.get('/favicon.ico', (req, res) => {
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
-
-// Add middleware to determine if search should be shown
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.locals.showSearch = req.path === '/articles' && !req.path.startsWith('/login');
   res.locals.isAdmin = !!req.session.user;

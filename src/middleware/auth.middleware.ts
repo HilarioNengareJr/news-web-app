@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Session } from '../types'; 
-import * as bcrypt from 'bcryptjs';
+import { default as bcrypt } from 'bcryptjs';
 
 let ADMIN_CREDENTIALS: { email: string; passwordHash: string } | null = null;
 
