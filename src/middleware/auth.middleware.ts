@@ -1,11 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/errors';
-import { Session } from '../types';
+import { Session } from '../types'; 
 import * as bcrypt from 'bcryptjs';
 
 let ADMIN_CREDENTIALS: { email: string; passwordHash: string } | null = null;
 
-async function initAdminCredentials() {
+async function initAdminCredentials(): Promise<{ email: string; passwordHash: string } | null> {
   if (!ADMIN_CREDENTIALS) {
     ADMIN_CREDENTIALS = {
       email: 'admin@example.com',
@@ -32,7 +31,7 @@ export const validateLoginInput = async (
   next: NextFunction
 ): Promise<void> => {
   const { email, password } = req.body;
-  
+
   if (!email || !password) {
     return res.render('login', { 
       error: 'Email and password are required',
@@ -41,7 +40,7 @@ export const validateLoginInput = async (
   }
 
   const credentials = await initAdminCredentials();
-  if (email !== credentials.email || 
+  if (credentials === null || email !== credentials.email || 
       !(await bcrypt.compare(password, credentials.passwordHash))) {
     return res.render('login', {
       error: 'Invalid email or password',
