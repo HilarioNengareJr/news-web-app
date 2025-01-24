@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import bodyParser from 'body-parser';
@@ -29,8 +28,9 @@ dotenv.config();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Initialize database connection
-await db.initializeDB();
+// Test database connection
+await pool.query('SELECT NOW()');
+console.log('Database connection established');
 
 const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
@@ -97,7 +97,7 @@ app.use('/', authRoutes);
 // Admin routes
 app.get('/admin', requireAuth, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
-    const articles = await db.getArticles();
+    const articles = await articleService.getArticles();
     res.format({
       'application/json': () => {
         res.json(articles);
@@ -123,7 +123,7 @@ app.post('/articles', requireAuth, async (req: express.Request, res: express.Res
       throw AppError.validation('Title and content are required');
     }
 
-    const article = await db.createArticle({
+    const article = await articleService.createArticle({
       title,
       content,
       tags: tags ? tags.split(',').map(tag => tag.trim()) : []
@@ -194,7 +194,7 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
 // Single article page
 app.get('/article/:slug', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
-    const article = await db.getArticleBySlug(req.params.slug);
+    const article = await articleService.getArticleBySlug(req.params.slug);
     if (!article) {
       throw AppError.notFound(ErrorMessages.NOT_FOUND.article);
     }
