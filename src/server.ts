@@ -7,7 +7,7 @@ import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import * as db from './db';
 import { initializeDB, getArticles, getArticleBySlug } from './db';
-import { errorHandler } from './middleware/errorHandler';
+import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
 import { Article } from './types';
 
