@@ -16,7 +16,7 @@ import authRoutes from './routes/auth.routes';
 import { authService } from '../services/auth.service';
 
 // Import middleware
-import { requireAuth } from './middleware/auth';
+import { requireAuth } from './middleware/auth.middleware';
 
 /**
  * Extend express-session types with custom session data
