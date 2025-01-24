@@ -1,5 +1,5 @@
 import { pool } from '../db/connection';
-import { Article } from '../types';
+import { Article, PaginatedResponse } from '../types';
 import slugify from 'slugify';
 
 const ITEMS_PER_PAGE = 9;
@@ -10,19 +10,12 @@ export interface SearchParams {
   tags?: string[];
 }
 
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  totalPages: number;
-  currentPage: number;
-}
-
 export async function getArticles(
   searchParams: Partial<SearchParams> = {}, 
   page: number = 1
 ): Promise<PaginatedResponse<Article>> {
   const skip = (page - 1) * ITEMS_PER_PAGE;
-  const offset = skip > 0 ? `OFFSET ${skip}` : '';
+  const offset = skip > 0 ? skip : 0;
   
   let query = `
     SELECT 
@@ -30,29 +23,32 @@ export async function getArticles(
       u.id as "authorId", u.email as "authorEmail"
     FROM articles a
     JOIN users u ON a.author_id = u.id
-    ORDER BY a.published_at DESC
-    LIMIT ${ITEMS_PER_PAGE} ${offset}
   `;
 
-  const countQuery = `SELECT COUNT(*) FROM articles`;
+  const params: (string | number)[] = [];
+  let paramCount = 1;
 
   if (searchParams?.search) {
-    const searchTerm = `%${searchParams.search.toLowerCase()}%`;
-    query = `
-      SELECT 
-        a.id, a.title, a.slug, a.content, a.tags, a.published_at as "publishedAt",
-        u.id as "authorId", u.email as "authorEmail"
-      FROM articles a
-      JOIN users u ON a.author_id = u.id
-      WHERE LOWER(a.title) LIKE $1 OR $1 = ANY(a.tags)
-      ORDER BY a.published_at DESC
-      LIMIT ${ITEMS_PER_PAGE} ${offset}
-    `;
+    query += ` WHERE LOWER(a.title) LIKE $${paramCount} OR $${paramCount} = ANY(a.tags)`;
+    params.push(`%${searchParams.search.toLowerCase()}%`);
+    paramCount++;
   }
 
+  query += `
+    ORDER BY a.published_at DESC
+    LIMIT $${paramCount} OFFSET $${paramCount + 1}
+  `;
+  params.push(ITEMS_PER_PAGE, offset);
+
+  const countQuery = `
+    SELECT COUNT(*) 
+    FROM articles a
+    ${searchParams?.search ? 'WHERE LOWER(a.title) LIKE $1 OR $1 = ANY(a.tags)' : ''}
+  `;
+
   const [articlesResult, countResult] = await Promise.all([
-    pool.query<Article>(query, searchParams?.search ? [searchParams.search] : []),
-    pool.query<{ count: string }>(countQuery)
+    pool.query<Article>(query, params),
+    pool.query<{ count: string }>(countQuery, searchParams?.search ? [params[0]] : [])
   ]);
 
   const total = parseInt(countResult.rows[0].count, 10);
@@ -89,7 +85,13 @@ export async function createArticle(
       (title, slug, content, tags, author_id, published_at)
     VALUES ($1, $2, $3, $4, $5, NOW())
     RETURNING 
-      id, title, slug, content, tags, published_at as "publishedAt"
+      id, 
+      title, 
+      slug, 
+      content, 
+      tags, 
+      published_at as "publishedAt",
+      (SELECT email FROM users WHERE id = $5) as "authorEmail"
   `, [
     articleData.title,
     slug,
@@ -98,7 +100,10 @@ export async function createArticle(
     userId
   ]);
 
-  return result.rows[0];
+  return {
+    ...result.rows[0],
+    authorId: userId
+  };
 }
 
 export async function updateArticle(
@@ -114,7 +119,14 @@ export async function updateArticle(
       updated_at = NOW()
     WHERE id = $4
     RETURNING 
-      id, title, slug, content, tags, published_at as "publishedAt"
+      id, 
+      title, 
+      slug, 
+      content, 
+      tags, 
+      published_at as "publishedAt",
+      author_id as "authorId",
+      (SELECT email FROM users WHERE id = author_id) as "authorEmail"
   `, [
     articleData.title,
     articleData.content,
