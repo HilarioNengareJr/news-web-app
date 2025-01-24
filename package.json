@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "NODE_OPTIONS='--loader ts-node/esm' ts-node-dev src/server.ts",
+    "dev": "NODE_OPTIONS='--import tsx' ts-node-dev src/server.ts",
     "start": "node dist/server.js",
     "type-check": "tsc --noEmit",
     "init-db": "NODE_OPTIONS='--loader ts-node/esm' ts-node src/db/init.ts"
@@ -32,6 +32,7 @@
     "@types/node": "^20.11.19",
     "@types/pg": "^8.11.11",
     "ts-node-dev": "^2.0.0",
+    "tsx": "^4.7.0",
     "typescript": "^5.3.3"
   }
 }
