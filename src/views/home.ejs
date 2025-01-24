@@ -1,18 +1,20 @@
 <%- include('layouts/header') %>
 
 <div class="row g-4 mb-4">
-    <% if (articles.articles && articles.articles.length > 0) { %>
-        <% articles.articles.forEach((article, index) => { %>
+    <% if (articles && articles.length > 0) { %>
+        <% articles.forEach((article, index) => { %>
             <div class="col-12 <%= index === 0 ? '' : 'col-md-6 col-lg-4' %>">
                 <div class="card article-card shadow-sm h-100">
-                    <img 
-                        src="<%= article.image_url %>" 
-                        class="card-img-top" 
-                        alt="<%= article.title %>"
-                        style="<%= index === 0 ? 'height: 400px;' : '' %>">
+                    <% if (article.image_url) { %>
+                        <img 
+                            src="<%= article.image_url %>" 
+                            class="card-img-top" 
+                            alt="<%= article.title %>"
+                            style="<%= index === 0 ? 'height: 400px;' : '' %>">
+                    <% } %>
                     <div class="card-body">
                         <h5 class="card-title"><%= article.title %></h5>
-                        <p class="card-text text-muted"><%= article.excerpt %></p>
+                        <p class="card-text text-muted"><%= article.content.substring(0, 100) + '...' %></p>
                         <div class="mb-3">
                             <% article.tags.forEach(tag => { %>
                                 <span class="badge tag-badge"><%= tag %></span>
@@ -21,7 +23,7 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <a href="/article/<%= article.slug %>" class="btn btn-primary">Read More</a>
                             <small class="text-muted">
-                                <%= new Date(article.published_at).toLocaleDateString('en-US', { 
+                                <%= new Date(article.publishedAt).toLocaleDateString('en-US', { 
                                     year: 'numeric', 
                                     month: 'short', 
                                     day: 'numeric' 
@@ -64,19 +66,19 @@
     <% } %>
 </div>
 
-<% if (articles.articles && articles.articles.length > 0 && articles.totalPages > 1) { %>
+<% if (articles && articles.length > 0 && pagination && pagination.totalPages > 1) { %>
 <nav aria-label="Page navigation" class="my-4">
     <ul class="pagination justify-content-center">
-        <li class="page-item <%= articles.currentPage === 1 ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= articles.currentPage - 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= articles.currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : '' %>>Previous</a>
+        <li class="page-item <%= pagination.currentPage === 1 ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= pagination.currentPage - 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= pagination.currentPage === 1 ? 'tabindex="-1" aria-disabled="true"' : '' %>>Previous</a>
         </li>
-        <% for(let i = 1; i <= articles.totalPages; i++) { %>
-            <li class="page-item <%= articles.currentPage === i ? 'active' : '' %>">
+        <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+            <li class="page-item <%= pagination.currentPage === i ? 'active' : '' %>">
                 <a class="page-link" href="?page=<%= i %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>"><%= i %></a>
             </li>
         <% } %>
-        <li class="page-item <%= articles.currentPage === articles.totalPages ? 'disabled' : '' %>">
-            <a class="page-link" href="?page=<%= articles.currentPage + 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= articles.currentPage === articles.totalPages ? 'tabindex="-1" aria-disabled="true"' : '' %>>Next</a>
+        <li class="page-item <%= pagination.currentPage === pagination.totalPages ? 'disabled' : '' %>">
+            <a class="page-link" href="?page=<%= pagination.currentPage + 1 %><%= searchParams?.search ? '&search=' + searchParams.search : '' %>" <%= pagination.currentPage === pagination.totalPages ? 'tabindex="-1" aria-disabled="true"' : '' %>>Next</a>
         </li>
     </ul>
 </nav>
