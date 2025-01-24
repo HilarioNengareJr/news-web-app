@@ -1,30 +1,27 @@
-import { Pool } from 'pg';
-import * as bcrypt from 'bcryptjs';
 import { pool } from '../db/connection';
+import * as bcrypt from 'bcryptjs';
 
 export interface User {
   id: string;
   email: string;
   passwordHash: string;
   role: string;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export async function createUser(email: string, password: string): Promise<User> {
   const passwordHash = await bcrypt.hash(password, 10);
-  const result = await pool.query(
-    `INSERT INTO users (email, password_hash, role) 
-     VALUES ($1, $2, $3) 
-     RETURNING id, email, password_hash as "passwordHash", role, created_at as "createdAt", updated_at as "updatedAt"`,
-    [email, passwordHash, 'user']
+  const result = await pool.query<User>(
+    `INSERT INTO users (email, password_hash) 
+     VALUES ($1, $2) 
+     RETURNING id, email, password_hash as "passwordHash", role`,
+    [email, passwordHash]
   );
   return result.rows[0];
 }
 
 export async function findUserByEmail(email: string): Promise<User | null> {
-  const result = await pool.query(
-    `SELECT id, email, password_hash as "passwordHash", role, created_at as "createdAt", updated_at as "updatedAt"
+  const result = await pool.query<User>(
+    `SELECT id, email, password_hash as "passwordHash", role
      FROM users WHERE email = $1`,
     [email]
   );
@@ -33,4 +30,21 @@ export async function findUserByEmail(email: string): Promise<User | null> {
 
 export async function comparePassword(user: User, password: string): Promise<boolean> {
   return bcrypt.compare(password, user.passwordHash);
+}
+
+export async function updateUser(id: string, updates: Partial<User>): Promise<User> {
+  const result = await pool.query<User>(
+    `UPDATE users 
+     SET email = COALESCE($1, email),
+         password_hash = COALESCE($2, password_hash),
+         role = COALESCE($3, role)
+     WHERE id = $4
+     RETURNING id, email, password_hash as "passwordHash", role`,
+    [updates.email, updates.passwordHash, updates.role, id]
+  );
+  return result.rows[0];
+}
+
+export async function deleteUser(id: string): Promise<void> {
+  await pool.query('DELETE FROM users WHERE id = $1', [id]);
 }
