@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "build": "tsc",
-    "dev": "NODE_OPTIONS='--import tsx' ts-node-dev src/server.ts",
+    "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
     "type-check": "tsc --noEmit",
     "init-db": "NODE_OPTIONS='--loader ts-node/esm' ts-node src/db/init.ts"
