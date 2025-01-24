@@ -48,3 +48,14 @@ interface PaginatedResponse<T> {
   totalPages: number;
   currentPage: number;
 }
+
+/**
+ * Standard error response format
+ */
+interface ErrorResponse {
+  error: {
+    status: number;
+    message: string;
+    stack?: string;
+  };
+}
