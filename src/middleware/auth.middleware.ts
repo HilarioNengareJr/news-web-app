@@ -3,10 +3,17 @@ import { AppError } from '../utils/errors';
 import { Session } from '../types';
 import * as bcrypt from 'bcryptjs';
 
-const ADMIN_CREDENTIALS = {
-  email: 'foo@email.com',
-  passwordHash: await bcrypt.hash('admin123', 10)
-};
+let ADMIN_CREDENTIALS: { email: string; passwordHash: string } | null = null;
+
+async function initAdminCredentials() {
+  if (!ADMIN_CREDENTIALS) {
+    ADMIN_CREDENTIALS = {
+      email: 'foo@email.com',
+      passwordHash: await bcrypt.hash('admin123', 10)
+    };
+  }
+  return ADMIN_CREDENTIALS;
+}
 
 export const requireAuth = (
   req: Request & { session: Session },
@@ -33,8 +40,9 @@ export const validateLoginInput = async (
     });
   }
 
-  if (email !== ADMIN_CREDENTIALS.email || 
-      !(await bcrypt.compare(password, ADMIN_CREDENTIALS.passwordHash))) {
+  const credentials = await initAdminCredentials();
+  if (email !== credentials.email || 
+      !(await bcrypt.compare(password, credentials.passwordHash))) {
     return res.render('login', {
       error: 'Invalid email or password',
       email
