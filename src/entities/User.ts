@@ -7,13 +7,13 @@ export class UserEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ unique: true })
+  @Column({ type: 'varchar', unique: true, length: 255 })
   email: string;
 
-  @Column({ name: 'password_hash' })
+  @Column({ type: 'varchar', name: 'password_hash', length: 255 })
   passwordHash: string;
 
-  @Column({ default: 'user' })
+  @Column({ type: 'varchar', default: 'user', length: 50 })
   role: string;
 
   @CreateDateColumn({ name: 'created_at' })
