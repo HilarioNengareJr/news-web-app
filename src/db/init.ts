@@ -1,7 +1,9 @@
-import { initializeDB, createArticle } from '../db.js';
+import { createConnection } from 'typeorm';
+import { ArticleEntity } from '../entities/Article';
+import { UserEntity } from '../entities/User';
 import { Article } from '../types/index.js';
 import bcrypt from 'bcryptjs';
-import { userRepository } from '../db.js';
+import config from '../ormconfig';
 
 /**
  * Initializes the database by creating tables and inserting sample data if needed
@@ -11,7 +13,8 @@ export async function initDatabase(): Promise<void> {
   try {
     // Create articles table if it doesn't exist
     // Initialize TypeORM connection
-    await initializeDB();
+    const connection = await createConnection(config);
+    console.log('Database connection established');
 
     // Add default admin user if not exists
     const defaultAdmin = {
@@ -27,7 +30,7 @@ export async function initDatabase(): Promise<void> {
       .single();
 
     if (!existingAdmin) {
-      const userRepo = userRepository();
+      const userRepo = connection.getRepository(UserEntity);
       const adminUser = userRepo.create({
         email: defaultAdmin.email,
         passwordHash: defaultAdmin.password,
@@ -70,8 +73,14 @@ export async function initDatabase(): Promise<void> {
       }
     ];
 
+    const articleRepo = connection.getRepository(ArticleEntity);
     for (const article of sampleArticles) {
-      await createArticle(article, '00000000-0000-0000-0000-000000000001');
+      const newArticle = articleRepo.create({
+        ...article,
+        author: { id: '00000000-0000-0000-0000-000000000001' },
+        publishedAt: new Date()
+      });
+      await articleRepo.save(newArticle);
     }
 
     console.log('Successfully initialized database with sample articles');
