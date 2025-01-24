@@ -19,8 +19,18 @@ export async function getArticles(
   
   let query = `
     SELECT 
-      a.id, a.title, a.slug, a.content, a.tags, a.published_at as "publishedAt",
-      u.id as "authorId", u.email as "authorEmail"
+      a.id, 
+      a.title, 
+      a.slug, 
+      a.excerpt,
+      a.content,
+      a.image_url,
+      a.tags, 
+      a.status,
+      a.published_at as "publishedAt",
+      a.updated_at as "updatedAt",
+      u.id as "authorId", 
+      u.email as "authorEmail"
     FROM articles a
     JOIN users u ON a.author_id = u.id
   `;
@@ -82,16 +92,19 @@ export async function createArticle(
   
   const result = await pool.query<Article>(`
     INSERT INTO articles 
-      (title, slug, content, tags, author_id, published_at)
-    VALUES ($1, $2, $3, $4, $5, NOW())
+      (title, slug, excerpt, content, image_url, tags, status, author_id, published_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
     RETURNING 
       id, 
       title, 
       slug, 
-      content, 
+      excerpt,
+      content,
+      image_url,
       tags, 
+      status,
       published_at as "publishedAt",
-      (SELECT email FROM users WHERE id = $5) as "authorEmail"
+      (SELECT email FROM users WHERE id = $8) as "authorEmail"
   `, [
     articleData.title,
     slug,
@@ -114,8 +127,11 @@ export async function updateArticle(
     UPDATE articles
     SET 
       title = COALESCE($1, title),
-      content = COALESCE($2, content),
-      tags = COALESCE($3, tags),
+      excerpt = COALESCE($2, excerpt),
+      content = COALESCE($3, content),
+      image_url = COALESCE($4, image_url),
+      tags = COALESCE($5, tags),
+      status = COALESCE($6, status),
       updated_at = NOW()
     WHERE id = $4
     RETURNING 

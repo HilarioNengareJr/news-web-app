@@ -27,11 +27,17 @@ declare namespace Express {
 export interface Article {
   id: string;
   title: string;
-  content: string;
   slug: string;
+  excerpt?: string;
+  content: string;
+  image_url?: string;
   tags: string[];
+  status: 'draft' | 'published' | 'archived';
   publishedAt: Date;
   updatedAt?: Date;
+  deletedAt?: Date;
+  authorId: string;
+  authorEmail: string;
 }
 
 /**

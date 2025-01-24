@@ -10,10 +10,19 @@ export async function createArticle(
   
   const result = await pool.query<Article>(`
     INSERT INTO articles 
-      (title, slug, content, tags, author_id, published_at)
-    VALUES ($1, $2, $3, $4, $5, NOW())
+      (title, slug, excerpt, content, image_url, tags, status, author_id, published_at)
+    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW())
     RETURNING 
-      id, title, slug, content, tags, published_at as "publishedAt"
+      id, 
+      title, 
+      slug, 
+      excerpt,
+      content,
+      image_url,
+      tags, 
+      status,
+      published_at as "publishedAt",
+      (SELECT email FROM users WHERE id = $8) as "authorEmail"
   `, [
     articleData.title,
     slug,
