@@ -1,5 +1,5 @@
-import { supabase } from '../db';
-import { Article } from '../types';
+import { supabase } from '../db.js';
+import { Article } from '../types/index.js';
 import bcrypt from 'bcryptjs';
 
 /**
