@@ -1,5 +1,5 @@
 import express from 'express';
-import { authService } from '../services/auth';
+import { authService } from '../services/auth.service';
 import { AppError } from '../utils/errors';
 
 const router = express.Router();
