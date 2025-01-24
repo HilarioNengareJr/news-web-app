@@ -67,6 +67,11 @@ app.use(session({
 // Static files
 app.use(express.static(join(__dirname, 'public')));
 
+// Favicon handler
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
 // View engine setup
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
