@@ -26,11 +26,6 @@ export class User implements UserEntity {
     return bcrypt.compare(password, this.passwordHash);
   }
 }
-  id: string;
-  email: string;
-  passwordHash: string;
-  role: string;
-}
 
 export async function createUser(email: string, password: string): Promise<UserEntity> {
   const passwordHash = await bcrypt.hash(password, 10);
