@@ -1,5 +1,6 @@
-import { createConnection, getRepository } from 'typeorm';
-import config from '../ormconfig';
+import 'reflect-metadata';
+import { DataSource, Repository } from 'typeorm';
+import config from '../ormconfig.js';
 import { ArticleEntity } from './entities/Article';
 import { UserEntity } from './entities/User';
 import { PaginatedResponse, Article } from '../types';
@@ -7,20 +8,22 @@ import { Article } from '../types';
 
 const ITEMS_PER_PAGE = 9;
 
+// Create a new DataSource instance
+export const AppDataSource = new DataSource(config);
+
 export async function initializeDB() {
   try {
-    const connection = await createConnection(config);
-
+    await AppDataSource.initialize();
     console.log('Database connection established');
-    return connection;
+    return AppDataSource;
   } catch (error) {
     console.error('Database connection error:', error);
     process.exit(1);
   }
 }
 
-export const articleRepository = () => getRepository(ArticleEntity);
-export const userRepository = () => getRepository(UserEntity);
+export const articleRepository = (): Repository<ArticleEntity> => AppDataSource.getRepository(ArticleEntity);
+export const userRepository = (): Repository<UserEntity> => AppDataSource.getRepository(UserEntity);
 
 export interface SearchParams {
   search?: string;
