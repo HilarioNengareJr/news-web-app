@@ -138,23 +138,23 @@ app.get('/articles', async (req: express.Request, res: express.Response, next: e
       search: (req.query.search as string) || null
     };
     
-    const articles = await articleService.getArticles({
+    const result = await articleService.getArticles({
       page,
       search: searchParams.search || undefined
     });
     
     res.format({
       'application/json': () => {
-        res.json(articles);
+        res.json(result);
       },
       'text/html': () => {
         res.render('home', { 
-          articles,
+          articles: result.data,
           searchParams,
           pagination: {
-            total: articles.total,
-            totalPages: articles.totalPages,
-            currentPage: articles.currentPage
+            total: result.total,
+            totalPages: result.totalPages,
+            currentPage: result.currentPage
           }
         });
       }
@@ -167,20 +167,20 @@ app.get('/articles', async (req: express.Request, res: express.Response, next: e
 // Home page
 app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
-    const articles = await articleService.getArticles({
+    const result = await articleService.getArticles({
       page: 1
     });
     res.format({
       'application/json': () => {
-        res.json(articles);
+        res.json(result);
       },
       'text/html': () => {
         res.render('home', { 
-          articles,
+          articles: result.data,
           searchParams: null,
           pagination: {
-            total: articles.total,
-            totalPages: articles.totalPages,
+            total: result.total,
+            totalPages: result.totalPages,
             currentPage: 1
           }
         });
