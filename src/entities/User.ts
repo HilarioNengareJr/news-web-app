@@ -1,39 +1,36 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToMany, BeforeInsert, BeforeUpdate } from 'typeorm';
-import { ArticleEntity } from './Article';
+import { Pool } from 'pg';
 import * as bcrypt from 'bcryptjs';
+import { pool } from '../db/connection';
 
-@Entity('users')
-export class UserEntity {
-  @PrimaryGeneratedColumn('uuid')
+export interface User {
   id: string;
-
-  @Column({ type: 'varchar', unique: true, length: 255 })
   email: string;
-
-  @Column({ type: 'varchar', name: 'password_hash', length: 255 })
   passwordHash: string;
-
-  @Column({ type: 'varchar', default: 'user', length: 50 })
   role: string;
-
-  @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
-
-  @UpdateDateColumn({ name: 'updated_at' })
   updatedAt: Date;
+}
 
-  @OneToMany(() => ArticleEntity, article => article.author)
-  articles: ArticleEntity[];
+export async function createUser(email: string, password: string): Promise<User> {
+  const passwordHash = await bcrypt.hash(password, 10);
+  const result = await pool.query(
+    `INSERT INTO users (email, password_hash, role) 
+     VALUES ($1, $2, $3) 
+     RETURNING id, email, password_hash as "passwordHash", role, created_at as "createdAt", updated_at as "updatedAt"`,
+    [email, passwordHash, 'user']
+  );
+  return result.rows[0];
+}
 
-  @BeforeInsert()
-  @BeforeUpdate()
-  async hashPassword() {
-    if (this.passwordHash) {
-      this.passwordHash = await bcrypt.hash(this.passwordHash, 10);
-    }
-  }
+export async function findUserByEmail(email: string): Promise<User | null> {
+  const result = await pool.query(
+    `SELECT id, email, password_hash as "passwordHash", role, created_at as "createdAt", updated_at as "updatedAt"
+     FROM users WHERE email = $1`,
+    [email]
+  );
+  return result.rows[0] || null;
+}
 
-  async comparePassword(attempt: string): Promise<boolean> {
-    return bcrypt.compare(attempt, this.passwordHash);
-  }
+export async function comparePassword(user: User, password: string): Promise<boolean> {
+  return bcrypt.compare(password, user.passwordHash);
 }
