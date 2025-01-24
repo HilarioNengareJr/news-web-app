@@ -10,7 +10,7 @@ import * as userService from './entities/User';
 import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
 import { Article } from './types';
-import * as articleService from './services/article.service';
+import { articleService } from './services/article.service';
 
 // Import routes
 import authRoutes from './routes/auth.routes';
@@ -138,7 +138,10 @@ app.get('/articles', async (req: express.Request, res: express.Response, next: e
       search: (req.query.search as string) || null
     };
     
-    const articles = await db.getArticles(searchParams, page);
+    const articles = await articleService.getArticles({
+      page,
+      search: searchParams.search || undefined
+    });
     
     res.format({
       'application/json': () => {
@@ -164,7 +167,9 @@ app.get('/articles', async (req: express.Request, res: express.Response, next: e
 // Home page
 app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
-    const articles = await db.getArticles(null, 1);
+    const articles = await articleService.getArticles({
+      page: 1
+    });
     res.format({
       'application/json': () => {
         res.json(articles);

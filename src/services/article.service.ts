@@ -141,3 +141,92 @@ export async function deleteArticle(id: string): Promise<boolean> {
   await pool.query('DELETE FROM articles WHERE id = $1', [id]);
   return true;
 }
+import { pool } from '../db/connection';
+import { Article } from '../types';
+
+export const articleService = {
+  async getArticles(options: { 
+    page?: number; 
+    search?: string 
+  } = {}) {
+    const page = options.page || 1;
+    const limit = 10;
+    const offset = (page - 1) * limit;
+
+    let query = `
+      SELECT 
+        a.id, a.title, a.slug, a.content, a.tags, a.published_at as "publishedAt",
+        u.id as "authorId", u.email as "authorEmail"
+      FROM articles a
+      JOIN users u ON a.author_id = u.id
+    `;
+    const params = [];
+
+    if (options.search) {
+      query += ` WHERE a.title ILIKE $1 OR a.content ILIKE $1`;
+      params.push(`%${options.search}%`);
+    }
+
+    query += `
+      ORDER BY a.published_at DESC
+      LIMIT $${params.length + 1}
+      OFFSET $${params.length + 2}
+    `;
+    params.push(limit, offset);
+
+    const articles = await pool.query<Article>(query, params);
+
+    // Get total count
+    let countQuery = `SELECT COUNT(*) FROM articles`;
+    if (options.search) {
+      countQuery += ` WHERE title ILIKE $1 OR content ILIKE $1`;
+    }
+    const countResult = await pool.query<{ count: string }>(countQuery, 
+      options.search ? [`%${options.search}%`] : []
+    );
+
+    const total = parseInt(countResult.rows[0].count, 10);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: articles.rows,
+      total,
+      totalPages,
+      currentPage: page
+    };
+  },
+
+  async getArticleBySlug(slug: string) {
+    const result = await pool.query<Article>(`
+      SELECT 
+        a.id, a.title, a.slug, a.content, a.tags, a.published_at as "publishedAt",
+        u.id as "authorId", u.email as "authorEmail"
+      FROM articles a
+      JOIN users u ON a.author_id = u.id
+      WHERE a.slug = $1
+    `, [slug]);
+
+    return result.rows[0] || null;
+  },
+
+  async createArticle(articleData: {
+    title: string;
+    content: string;
+    tags: string[];
+  }, authorId: string) {
+    const result = await pool.query<Article>(`
+      INSERT INTO articles 
+        (title, content, tags, author_id, published_at)
+      VALUES ($1, $2, $3, $4, NOW())
+      RETURNING 
+        id, title, slug, content, tags, published_at as "publishedAt"
+    `, [
+      articleData.title,
+      articleData.content,
+      articleData.tags,
+      authorId
+    ]);
+
+    return result.rows[0];
+  }
+};
