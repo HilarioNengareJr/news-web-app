@@ -175,17 +175,24 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
     const result = await articleService.getArticles({
       page: 1
     });
+    
+    // Only show published articles
+    const publishedArticles = result.data.filter(article => article.status === 'published');
+    
     res.format({
       'application/json': () => {
-        res.json(result);
+        res.json({
+          ...result,
+          data: publishedArticles
+        });
       },
       'text/html': () => {
         res.render('home', { 
-          articles: result.data,
+          articles: publishedArticles,
           searchParams: null,
           pagination: {
-            total: result.total,
-            totalPages: result.totalPages,
+            total: publishedArticles.length,
+            totalPages: Math.ceil(publishedArticles.length / ITEMS_PER_PAGE),
             currentPage: 1
           }
         });
