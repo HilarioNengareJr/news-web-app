@@ -8,8 +8,7 @@ declare namespace Express {
     user?: {
       id: string;
       email: string;
-      role: 'user' | 'admin';
-      isAdmin?: boolean;
+      role: 'admin';
     };
   }
 
@@ -17,17 +16,9 @@ declare namespace Express {
     user?: {
       id: string;
       email: string;
-      role: 'user' | 'admin';
-      isAdmin?: boolean;
+      role: 'admin';
     };
   }
-}
-
-interface AdminStats {
-  totalArticles: number;
-  totalUsers: number;
-  recentArticles: Article[];
-  recentUsers: User[];
 }
 
 /**
@@ -38,14 +29,9 @@ export interface Article {
   title: string;
   content: string;
   slug: string;
-  authorId: string;
   tags: string[];
   publishedAt: Date;
   updatedAt?: Date;
-  author?: {
-    id: string;
-    email: string;
-  };
 }
 
 /**

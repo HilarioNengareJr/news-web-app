@@ -98,14 +98,9 @@ app.use('/', authRoutes);
 // Admin routes
 app.get('/admin', requireAuth, async (req, res, next) => {
   try {
-    const [articles, users] = await Promise.all([
-      articleService.getArticles(),
-      pool.query('SELECT id, email, role FROM users')
-    ]);
-
+    const articles = await articleService.getArticles();
     res.render('admin-dashboard', {
       articles: articles.data,
-      users: users.rows,
       user: req.session.user
     });
   } catch (error) {
