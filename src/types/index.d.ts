@@ -32,8 +32,9 @@ export interface Article {
   authorId: string;
   tags: string[];
   publishedAt: Date;
-  updatedAt: Date;
+  updatedAt?: Date;
   author?: {
+    id: string;
     email: string;
   };
 }
