@@ -6,6 +6,30 @@ export interface UserEntity {
   email: string;
   passwordHash: string;
   role: string;
+  comparePassword(password: string): Promise<boolean>;
+}
+
+export class User implements UserEntity {
+  id: string;
+  email: string;
+  passwordHash: string;
+  role: string;
+
+  constructor(user: UserEntity) {
+    this.id = user.id;
+    this.email = user.email;
+    this.passwordHash = user.passwordHash;
+    this.role = user.role;
+  }
+
+  async comparePassword(password: string): Promise<boolean> {
+    return bcrypt.compare(password, this.passwordHash);
+  }
+}
+  id: string;
+  email: string;
+  passwordHash: string;
+  role: string;
 }
 
 export async function createUser(email: string, password: string): Promise<UserEntity> {
