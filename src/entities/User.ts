@@ -48,3 +48,14 @@ export async function updateUser(id: string, updates: Partial<User>): Promise<Us
 export async function deleteUser(id: string): Promise<void> {
   await pool.query('DELETE FROM users WHERE id = $1', [id]);
 }
+
+export async function isAdmin(userId: string): Promise<boolean> {
+  const result = await pool.query<{ exists: boolean }>(
+    `SELECT EXISTS(
+      SELECT 1 FROM users 
+      WHERE id = $1 AND role = 'admin'
+    )`,
+    [userId]
+  );
+  return result.rows[0].exists;
+}

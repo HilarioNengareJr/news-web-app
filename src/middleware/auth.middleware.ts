@@ -12,27 +12,23 @@ export const requireAuth = async (
     return res.redirect('/login');
   }
 
-  // Verify user still exists in database
   try {
-    const result = await pool.query(
-      'SELECT id, role FROM users WHERE id = $1',
+    // Verify user exists and is admin
+    const result = await pool.query<{ role: string }>(
+      `SELECT role FROM users 
+       WHERE id = $1 AND role = 'admin'`,
       [req.session.user.id]
     );
-    
+
     if (result.rows.length === 0) {
       req.session.destroy(() => {});
       return res.redirect('/login');
     }
 
-    if (result.rows[0].role !== 'admin') {
-      return res.status(403).render('error', {
-        message: 'Access denied. Admin privileges required.'
-      });
-    }
-
     next();
   } catch (error) {
-    next(AppError.database('Failed to verify user'));
+    console.error('Admin auth error:', error);
+    next(AppError.database('Failed to verify admin privileges'));
   }
 };
 

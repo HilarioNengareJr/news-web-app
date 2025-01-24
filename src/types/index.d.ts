@@ -8,7 +8,8 @@ declare namespace Express {
     user?: {
       id: string;
       email: string;
-      role: string;
+      role: 'user' | 'admin';
+      isAdmin?: boolean;
     };
   }
 
@@ -16,9 +17,17 @@ declare namespace Express {
     user?: {
       id: string;
       email: string;
-      role: string;
+      role: 'user' | 'admin';
+      isAdmin?: boolean;
     };
   }
+}
+
+interface AdminStats {
+  totalArticles: number;
+  totalUsers: number;
+  recentArticles: Article[];
+  recentUsers: User[];
 }
 
 /**

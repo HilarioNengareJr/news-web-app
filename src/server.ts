@@ -96,21 +96,20 @@ app.use('/api', (err: unknown, req: express.Request, res: express.Response, next
 app.use('/', authRoutes);
 
 // Admin routes
-app.get('/admin', requireAuth, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.get('/admin', requireAuth, async (req, res, next) => {
   try {
-    const articles = await articleService.getArticles();
-    res.format({
-      'application/json': () => {
-        res.json(articles);
-      },
-      'text/html': () => {
-        res.render('admin-dashboard', { 
-          articles: articles.data,
-          user: req.session.user
-        });
-      }
+    const [articles, users] = await Promise.all([
+      articleService.getArticles(),
+      pool.query('SELECT id, email, role FROM users')
+    ]);
+
+    res.render('admin-dashboard', {
+      articles: articles.data,
+      users: users.rows,
+      user: req.session.user
     });
   } catch (error) {
+    console.error('Admin dashboard error:', error);
     next(AppError.database('Unable to load admin dashboard'));
   }
 });
