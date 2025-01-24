@@ -5,7 +5,7 @@ import * as bcrypt from 'bcryptjs';
 
 const ADMIN_CREDENTIALS = {
   email: 'foo@email.com',
-  passwordHash: bcrypt.hashSync('admin123', 10)
+  passwordHash: await bcrypt.hash('admin123', 10)
 };
 
 export const requireAuth = (
@@ -19,11 +19,11 @@ export const requireAuth = (
   next();
 };
 
-export const validateLoginInput = (
+export const validateLoginInput = async (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {
+): Promise<void> => {
   const { email, password } = req.body;
   
   if (!email || !password) {
@@ -34,7 +34,7 @@ export const validateLoginInput = (
   }
 
   if (email !== ADMIN_CREDENTIALS.email || 
-      !bcrypt.compareSync(password, ADMIN_CREDENTIALS.passwordHash)) {
+      !(await bcrypt.compare(password, ADMIN_CREDENTIALS.passwordHash))) {
     return res.render('login', {
       error: 'Invalid email or password',
       email
