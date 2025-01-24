@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { AppError } from '../utils/errors';
 import { ErrorResponse } from '../types';
-import { DatabaseError } from 'pg';
+import pg from 'pg';
+const { DatabaseError } = pg;
 
 /**
  * Error handling middleware that formats and returns consistent error responses
