@@ -4,6 +4,7 @@ import { UserEntity } from '../entities/User';
 import { Article } from '../types/index.js';
 import bcrypt from 'bcryptjs';
 import config from '../ormconfig';
+import slugify from 'slugify';
 
 /**
  * Initializes the database by creating tables and inserting sample data if needed
@@ -55,32 +56,64 @@ export async function initDatabase(): Promise<void> {
     const sampleArticles: Omit<Article, 'id' | 'slug' | 'publishedAt' | 'updatedAt' | 'author'>[] = [
       {
         title: 'Introduction to Modern Web Development',
-        content: 'Web development has evolved significantly...',
-        tags: ['web', 'development'],
-        author_id: '00000000-0000-0000-0000-000000000001'
+        content: 'Web development has evolved significantly over the years. From static HTML pages to dynamic, interactive web applications, the landscape has changed dramatically. Modern frameworks like React, Angular, and Vue.js have revolutionized how we build user interfaces.',
+        tags: ['web', 'development', 'javascript'],
+        authorId: '00000000-0000-0000-0000-000000000001'
       },
       {
         title: 'The Future of AI in Software Engineering',
-        content: 'Artificial Intelligence is transforming...',
-        tags: ['ai', 'software'],
-        author_id: '00000000-0000-0000-0000-000000000001'
+        content: 'Artificial Intelligence is transforming the software industry. From automated code generation to intelligent debugging tools, AI is helping developers work more efficiently. Machine learning models are being integrated into applications at an unprecedented rate.',
+        tags: ['ai', 'software', 'machine-learning'],
+        authorId: '00000000-0000-0000-0000-000000000001'
       },
       {
         title: 'Best Practices for Database Design',
-        content: 'Proper database design is crucial...',
-        tags: ['database', 'design'],
-        author_id: '00000000-0000-0000-0000-000000000001'
+        content: 'Proper database design is crucial for building scalable applications. Normalization, indexing, and proper schema design can make or break an application\'s performance. Understanding ACID properties and transaction management is essential for any developer working with databases.',
+        tags: ['database', 'design', 'sql'],
+        authorId: '00000000-0000-0000-0000-000000000001'
+      },
+      {
+        title: 'TypeScript: The Future of JavaScript Development',
+        content: 'TypeScript has become an essential tool for modern JavaScript development. With its strong typing system and excellent tooling support, it helps catch errors early and improves code maintainability. Many large-scale projects are now adopting TypeScript as their primary language.',
+        tags: ['typescript', 'javascript', 'web'],
+        authorId: '00000000-0000-0000-0000-000000000001'
+      },
+      {
+        title: 'Building RESTful APIs with Node.js',
+        content: 'Node.js has become a popular choice for building RESTful APIs due to its non-blocking I/O model and vast ecosystem. With frameworks like Express.js, developers can quickly create scalable and maintainable APIs. Proper error handling and security considerations are crucial when building production-ready APIs.',
+        tags: ['nodejs', 'api', 'rest'],
+        authorId: '00000000-0000-0000-0000-000000000001'
       }
     ];
 
     const articleRepo = connection.getRepository(ArticleEntity);
-    for (const article of sampleArticles) {
-      const newArticle = articleRepo.create({
-        ...article,
-        author: { id: '00000000-0000-0000-0000-000000000001' },
-        publishedAt: new Date()
+    const userRepo = connection.getRepository(UserEntity);
+    
+    // Create admin user if not exists
+    let adminUser = await userRepo.findOneBy({ email: 'admin@news.com' });
+    if (!adminUser) {
+      adminUser = userRepo.create({
+        id: '00000000-0000-0000-0000-000000000001',
+        email: 'admin@news.com',
+        passwordHash: await bcrypt.hash('admin123', 10),
+        role: 'admin'
       });
-      await articleRepo.save(newArticle);
+      await userRepo.save(adminUser);
+    }
+
+    // Create sample articles
+    for (const article of sampleArticles) {
+      const existingArticle = await articleRepo.findOneBy({ title: article.title });
+      if (!existingArticle) {
+        const newArticle = articleRepo.create({
+          ...article,
+          slug: slugify(article.title, { lower: true, strict: true }),
+          author: adminUser,
+          publishedAt: new Date(),
+          updatedAt: new Date()
+        });
+        await articleRepo.save(newArticle);
+      }
     }
 
     console.log('Successfully initialized database with sample articles');

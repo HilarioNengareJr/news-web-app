@@ -227,7 +227,12 @@ app.use(errorHandler);
 // Initialize database and start server
 (async () => {
   try {
-    await initializeDB();
+    const connection = await initializeDB();
+    
+    // Initialize sample data
+    const { initDatabase } = await import('./db/init.js');
+    await initDatabase();
+    
     app.listen(port, () => {
       console.log(`Server running at http://localhost:${port}`);
     });
