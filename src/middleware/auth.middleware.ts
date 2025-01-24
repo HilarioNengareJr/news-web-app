@@ -1,22 +1,16 @@
-import { Request, Response, NextFunction } from 'express';
-import { AppError, ErrorMessages } from '../utils/errors';
-import { Session } from '../types';
+import { authService } from '../services/auth.js';
+import { AppError, ErrorMessages } from '../utils/errors.js';
 
-export function requireAuth(req: Request & { session: Session }, res: Response, next: NextFunction) {
-  if (!req.session.user) {
-    return next(AppError.authentication('Please login to access this page'));
-  }
-  next();
-}
-
-export function requireAdmin(req: Request & { session: Session }, res: Response, next: NextFunction) {
+export const requireAuth = async (req, res, next) => {
+  // Check if user is authenticated via session
   if (!req.session.user || req.session.user.role !== 'admin') {
-    return next(AppError.authorization('Admin privileges required'));
+    return res.redirect('/login');
   }
+  
   next();
-}
+};
 
-export function validateLoginInput(req: Request, res: Response, next: NextFunction) {
+export const validateLoginInput = (req, res, next) => {
   const { email, password } = req.body;
   
   if (!email || !password) {
@@ -48,4 +42,4 @@ export function validateLoginInput(req: Request, res: Response, next: NextFuncti
   }
 
   next();
-}
+};
