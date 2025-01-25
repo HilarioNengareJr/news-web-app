@@ -147,6 +147,51 @@ app.post('/admin/article/new', requireAuth, async (req: Request, res: Response, 
   }
 });
 
+// Route to render the edit article page
+app.get('/admin/article/:id/edit', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const articleId = req.params.id;
+    const article = await articleService.getArticleById(articleId);
+
+    if (!article) {
+      return next(AppError.notFound('Article not found'));
+    }
+
+    res.render('create-edit-article', { 
+      user: req.session.user,
+      article 
+    });
+  } catch (error) {
+    next(AppError.database('Unable to load edit page'));
+  }
+});
+
+// Route to update the article
+app.put('/admin/article/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const articleId = req.params.id;
+    const { title, content, tags } = req.body;
+
+    if (!title || !content) {
+      throw AppError.validation('Title and content are required');
+    }
+
+    const updatedArticle = await articleService.updateArticle(articleId, {
+      title,
+      content,
+      tags: tags ? tags.split(',').map(tag => tag.trim()) : []
+    });
+
+    if (!updatedArticle) {
+      return next(AppError.notFound('Article not found'));
+    }
+
+    res.redirect('/admin');
+  } catch (error) {
+    next(AppError.database('Unable to update article'));
+  }
+});
+
 // Route to delete an article
 
 app.delete('/admin/article/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
