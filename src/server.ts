@@ -1,29 +1,17 @@
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
-import bodyParser from 'body-parser';
 import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
 import { pool } from './db/connection';
-import { findUserByEmail } from './entities/User';
 import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
-import { Article } from './types';
 import { articleService } from './services/article.service';
-
-// Import routes
 import authRoutes from './routes/auth.routes';
-import { authService } from '../services/auth.service';
-
-// Import middleware
 import { requireAuth, validateLoginInput } from './middleware/auth.middleware';
 
-/**
- * Extend express-session types with custom session data
- */
-// This declaration is now in src/types/index.d.ts
-
+// Initialize environment variables
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,9 +25,6 @@ const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
 
 // Security middleware
-/**
- * Security middleware to set HTTP headers
- */
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -47,7 +32,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   next();
 });
 
-// Middleware
+// Middleware setup
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
@@ -67,7 +52,6 @@ app.use(session({
 // Static files
 app.use(express.static(join(__dirname, 'public')));
 
-
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end();
 });
@@ -81,24 +65,10 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   next();
 });
 
-// API error handler
-app.use('/api', (err: unknown, req: express.Request, res: express.Response, next: express.NextFunction) => {
-  if (!(err instanceof Error)) {
-    err = new Error('Unknown error occurred');
-  }
-  console.error(err);
-  res.status(500).json({
-    error: {
-      message: err.message || 'Internal server error',
-      status: 500
-    }
-  });
-});
-
 // Auth routes
 app.use('/', authRoutes);
 
-// Login page
+// Login routes
 app.get('/login', (req, res) => {
   res.render('login', { 
     error: null,
@@ -106,12 +76,10 @@ app.get('/login', (req, res) => {
   });
 });
 
-// Login form submission
 app.post('/login', validateLoginInput, async (req, res) => {
   try {
     const { email } = req.body;
     
-    // Get actual user from database
     const user = await userService.findUserByEmail(email);
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
@@ -130,8 +98,8 @@ app.post('/login', validateLoginInput, async (req, res) => {
   }
 });
 
-// Logout
-app.post('/logout', (req, res) => {
+// Logout route
+app.post('/logout', (req: Request, res: Response) => {
   req.session.destroy(err => {
     if (err) {
       console.error('Error destroying session:', err);
@@ -141,7 +109,7 @@ app.post('/logout', (req, res) => {
 });
 
 // Admin routes
-app.get('/admin', requireAuth, async (req, res, next) => {
+app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articles = await articleService.getArticles();
     res.render('admin-dashboard', {
@@ -154,11 +122,15 @@ app.get('/admin', requireAuth, async (req, res, next) => {
   }
 });
 
-// Article creation route
-app.post('/articles', requireAuth, async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+// Route to create new article
+app.get('/admin/article/new', requireAuth, (req: Request, res: Response) => {
+  res.render('create-edit-article', { user: req.session.user });
+});
+
+app.post('/admin/article/new', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { title, content, tags } = req.body;
-    
+
     if (!title || !content) {
       throw AppError.validation('Title and content are required');
     }
@@ -175,8 +147,27 @@ app.post('/articles', requireAuth, async (req: express.Request, res: express.Res
   }
 });
 
+// Route to delete an article
+
+app.delete('/admin/article/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
+  try {
+      const articleId = req.params.id;
+
+      const article = await articleService.getArticleById(articleId);
+      if (!article) {
+          return res.status(404).json({ error: 'Article not found' });
+      }
+
+      await articleService.deleteArticle(articleId);
+      res.status(200).json({ message: 'Article deleted successfully' });
+  } catch (error) {
+      console.error('Error deleting article:', error);
+      next(AppError.database('Unable to delete article'));
+  }
+});
+
 // Articles listing page
-app.get('/articles', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
+app.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const page = parseInt((req.query.page as string) || '1', 10);
     const searchParams = {
@@ -216,7 +207,6 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
       page: 1
     });
     
-    // Only show published articles
     const publishedArticles = result.data.filter(article => article.status === 'published');
     
     res.format({
@@ -232,7 +222,7 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
           searchParams: null,
           pagination: {
             total: publishedArticles.length,
-            totalPages: Math.ceil(publishedArticles.length / 10), // Use fixed page size
+            totalPages: Math.ceil(publishedArticles.length / 10),
             currentPage: 1
           }
         });
@@ -275,7 +265,6 @@ app.use(errorHandler);
 // Initialize database and start server
 (async () => {
   try {
-    // Test database connection
     await pool.query('SELECT NOW()');
     console.log('Database connection established');
     

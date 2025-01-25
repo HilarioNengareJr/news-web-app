@@ -166,8 +166,14 @@ export const articleService = {
     return result.rows[0];
   },
 
-  async deleteArticle(id: string) {
-    await pool.query('DELETE FROM articles WHERE id = $1', [id]);
-    return true;
-  }
+  async deleteArticle(articleId: string) {
+    const query = 'DELETE FROM articles WHERE id = $1';
+    await pool.query(query, [articleId]);
+},
+
+  async getArticleById(articleId: string) {
+      const query = 'SELECT * FROM articles WHERE id = $1';
+      const { rows } = await pool.query(query, [articleId]);
+      return rows[0] || null;
+  },
 };
