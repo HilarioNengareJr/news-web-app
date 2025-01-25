@@ -69,14 +69,14 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 app.use('/', authRoutes);
 
 // Login routes
-app.get('/login', (req, res) => {
+app.get('/login', (req: Request, res: Response) => {
   res.render('login', { 
     error: null,
     email: ''
   });
 });
 
-app.post('/login', validateLoginInput, async (req, res) => {
+app.post('/login', validateLoginInput, async (req: Request, res: Response) => {
   try {
     const { email } = req.body;
     
@@ -123,8 +123,12 @@ app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFun
 });
 
 // Route to create new article
-app.get('/admin/article/new', requireAuth, (req: Request, res: Response) => {
-  res.render('create-edit-article', { user: req.session.user });
+app.get('/admin/article/new', async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.render('create-edit-article', { article: null });
+  } catch (err) {
+    next(err); 
+  }
 });
 
 app.post('/admin/article/new', requireAuth, async (req: Request, res: Response, next: NextFunction) => {

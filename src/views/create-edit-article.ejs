@@ -3,7 +3,7 @@
 <div class="card shadow-sm">
     <div class="card-body">
         <h2 class="card-title mb-4"><%= article ? 'Edit Article' : 'Create New Article' %></h2>
-        <form action="<%= article ? `/admin/article/${article.id}?_method=PUT` : '/admin/article' %>" method="POST">
+        <form action="<%= article ? `/admin/article/${article.id}?_method=PUT` : '/admin/article/new' %>" method="POST">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" id="title" name="title" value="<%= article ? article.title : '' %>" required>
