@@ -22,9 +22,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/"><i class="bi bi-house"></i> Home</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/articles"><i class="bi bi-newspaper"></i> Articles</a>
-                    </li>
                    <% if (locals.isAdmin) { %>
                         <li class="nav-item">
                             <a class="nav-link" href="/admin"><i class="bi bi-gear"></i> Admin</a>
@@ -47,27 +44,27 @@
     </nav>
     
     <% if (locals.showSearch) { %>
-    <div class="search-container">
-        <div class="container">
-            <form class="search-form" action="/articles" method="GET">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="bi bi-search"></i>
-                    </span>
-                    <input 
-                        type="text" 
-                        name="search" 
-                        class="form-control search-input" 
-                        placeholder="Search articles by title or tag..."
-                        value="<%= locals.searchParams?.search || '' %>"
-                        aria-label="Search articles">
-                    <button class="btn btn-primary" type="submit">
-                        Search
-                    </button>
-                </div>
-            </form>
+        <div class="search-container">
+            <div class="container">
+                <form class="search-form" action="/" method="GET"> 
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="bi bi-search"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            name="search" 
+                            class="form-control search-input" 
+                            placeholder="Search articles by title or tag..."
+                            value="<%= locals.searchParams?.search || '' %>" 
+                            aria-label="Search articles">
+                        <button class="btn btn-primary" type="submit">
+                            Search
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
     <% } %>
-
+    
     <div class="container mt-4">

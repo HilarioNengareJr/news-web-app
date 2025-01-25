@@ -215,27 +215,34 @@ app.delete('/admin/article/:id', requireAuth, async (req: Request, res: Response
   }
 });
 
-// Articles listing page
-app.get('/articles', async (req: Request, res: Response, next: NextFunction) => {
+// Combined Home Page Route
+app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const page = parseInt((req.query.page as string) || '1', 10);
     const searchParams = {
       search: (req.query.search as string) || null
     };
-    
+
     const result = await articleService.getArticles({
       page,
       search: searchParams.search || undefined
     });
-    
+
+    // Filter published articles
+    const publishedArticles = result.data.filter(article => article.status === 'published');
+
     res.format({
       'application/json': () => {
-        res.json(result);
+        res.json({
+          ...result,
+          data: publishedArticles
+        });
       },
       'text/html': () => {
         res.render('home', { 
-          articles: result.data,
+          articles: publishedArticles,
           searchParams,
+          showSearch: true,  
           pagination: {
             total: result.total,
             totalPages: result.totalPages,
@@ -249,38 +256,6 @@ app.get('/articles', async (req: Request, res: Response, next: NextFunction) => 
   }
 });
 
-// Home page
-app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-  try {
-    const result = await articleService.getArticles({
-      page: 1
-    });
-    
-    const publishedArticles = result.data.filter(article => article.status === 'published');
-    
-    res.format({
-      'application/json': () => {
-        res.json({
-          ...result,
-          data: publishedArticles
-        });
-      },
-      'text/html': () => {
-        res.render('home', { 
-          articles: publishedArticles,
-          searchParams: null,
-          pagination: {
-            total: publishedArticles.length,
-            totalPages: Math.ceil(publishedArticles.length / 10),
-            currentPage: 1
-          }
-        });
-      }
-    });
-  } catch (error) {
-    next(AppError.database('Unable to load articles'));
-  }
-});
 
 // Single article page
 app.get('/article/:slug', async (req: express.Request, res: express.Response, next: express.NextFunction) => {

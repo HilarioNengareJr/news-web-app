@@ -14,7 +14,9 @@
                     <% } %>
                     <div class="card-body">
                         <h5 class="card-title"><%= article.title %></h5>
-                        <p class="card-text text-muted"><%= article.content.substring(0, 100) + '...' %></p>
+                        <p class="card-text text-muted text-truncate" style="max-width: 100%;">
+                            <%- article.content.substring(0, 100) + '...' %>
+                        </p>                          
                         <div class="mb-3">
                             <% article.tags.forEach(tag => { %>
                                 <span class="badge tag-badge"><%= tag %></span>
