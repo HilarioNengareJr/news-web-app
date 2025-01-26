@@ -199,25 +199,25 @@ src/public/readme_images/Screenshot from 2025-01-27 00-10-18.png
 
 ### Article Upload/Edit with tinyMCE api
 
-src/public/readme_images/Screenshot from 2025-01-27 00-10-35.png
-src/public/readme_images/Screenshot from 2025-01-27 00-10-46.png
-src/public/readme_images/Screenshot from 2025-01-27 00-10-57.png
+./public/readme_images/Screenshot from 2025-01-27 00-10-35.png
+./public/readme_images/Screenshot from 2025-01-27 00-10-46.png
+./public/readme_images/Screenshot from 2025-01-27 00-10-57.png
 
 
 ### Home Page With Featured Image and 2 uploads
 
-src/public/readme_images/Screenshot from 2025-01-27 00-11-10.png
-src/public/readme_images/Screenshot from 2025-01-27 00-11-25.png
+./public/readme_images/Screenshot from 2025-01-27 00-11-10.png
+./public/readme_images/Screenshot from 2025-01-27 00-11-25.png
 
 
 ### Article Page
 
-src/public/readme_images/Screenshot from 2025-01-27 00-11-38.png
-src/public/readme_images/Screenshot from 2025-01-27 00-11-44.png
+./public/readme_images/Screenshot from 2025-01-27 00-11-38.png
+./public/readme_images/Screenshot from 2025-01-27 00-11-44.png
 
 ### Search Bar (Entered a tag)(You can search with title)
 
-src/public/readme_images/Screenshot from 2025-01-27 00-12-00.png
+./public/readme_images/Screenshot from 2025-01-27 00-12-00.png
 
 
 ## The site is responsive and follows a mobile-first design approach!
