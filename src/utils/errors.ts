@@ -33,20 +33,7 @@ interface ErrorMessagesType {
     password?: string;
     connection?: string;
     maintenance?: string;
-  };
-  [key: string]: {
-    default: string;
-    invalid?: string;
-    expired?: string;
-    adminOnly?: string;
-    article?: string;
-    page?: string;
-    required?: string;
-    email?: string;
-    password?: string;
-    connection?: string;
-    maintenance?: string;
-    [key: string]: string | undefined;
+    [additionalKey: string]: string | undefined;  
   };
 }
 
