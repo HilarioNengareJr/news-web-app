@@ -337,7 +337,7 @@ app.use(errorHandler);
 
 /**
  * Initialize database and start server
- */ 
+  */ 
 (async () => {
   try {
     await pool.query('SELECT NOW()');
