@@ -1,4 +1,6 @@
-/* Variables */
+/*-----------------------------------*\
+  #Root Variables
+\*-----------------------------------*/
 :root {
     --primary-color: #3b82f6;
     --secondary-color: #60a5fa;
@@ -10,7 +12,9 @@
     --card-shadow-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
-/* Base Styles */
+/*-----------------------------------*\
+  #Reset
+\*-----------------------------------*/
 body {
     background-color: var(--light-bg);
     padding-top: 70px;
@@ -19,7 +23,6 @@ body {
     line-height: 1.6;
 }
 
-/* Tag Input Styles */
 .tag-input-container {
     position: relative;
 }
@@ -48,7 +51,9 @@ body {
     transform: translateY(-1px);
 }
 
-/* Navbar Styles */
+/*-----------------------------------*\
+  #Main Styles
+\*-----------------------------------*/
 .navbar {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
@@ -65,7 +70,6 @@ body {
     box-shadow: var(--card-shadow);
 }
 
-/* Search Container Styles */
 .search-container {
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
@@ -109,7 +113,6 @@ body {
     transform: scale(1.01);
 }
 
-/* Article Cards */
 .article-card {
     border: none;
     border-radius: 16px;
@@ -160,7 +163,6 @@ body {
     font-size: 1rem;
 }
 
-/* Tags */
 .tag-badge {
     background-color: rgba(59, 130, 246, 0.1) !important;
     color: var(--primary-color);
@@ -179,7 +181,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Buttons */
 .btn-primary {
     background-color: var(--primary-color);
     border: none;
@@ -231,7 +232,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* Forms */
 .form-control {
     border: 1px solid #e2e8f0;
     border-radius: 12px;
@@ -250,7 +250,6 @@ body {
     margin-bottom: 0.5rem;
 }
 
-/* Footer */
 .footer {
     background: var(--dark-bg);
     color: #e2e8f0;
@@ -293,7 +292,6 @@ body {
     font-size: 0.9rem;
 }
 
-/* Rich Content Styles */
 .rich-content {
     font-size: 1.1rem;
     line-height: 1.8;
@@ -364,7 +362,13 @@ body {
     color: var(--primary-color);
 }
 
-/* Responsive Design */
+/*-----------------------------------*\
+  #RESPONSIVE DESIGN
+\*-----------------------------------*/
+
+/*-----------------------------------*\
+  #Responsive for tablets
+\*-----------------------------------*/
 @media (max-width: 991.98px) {
     .navbar-collapse {
         background: rgba(255, 255, 255, 0.95);
@@ -391,6 +395,9 @@ body {
     .nav-item:nth-child(3) { animation-delay: 0.3s; }
 }
 
+/*-----------------------------------*\
+  # Responsive for phones
+\*-----------------------------------*/
 @media (max-width: 768px) {
     .article-card .card-img-top {
         height: 200px;
@@ -411,7 +418,9 @@ body {
     }
 }
 
-/* Animations */
+/*-----------------------------------*\
+  #Animations
+\*-----------------------------------*/
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -425,7 +434,8 @@ body {
 @keyframes scaleIn {
     from { transform: scale(0.98); opacity: 0; }
     to { transform: scale(1); opacity: 1; }
-}/* Footer positioning */
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -444,7 +454,9 @@ footer {
   flex-shrink: 0;
 }
 
-/* Login page specific styles */
+/**
+* Styles for login
+*/
 .login-page {
   min-height: 100vh;
   display: flex;

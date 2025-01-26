@@ -1,9 +1,23 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
 import express, { Request, Response, NextFunction } from 'express';
 import session from 'express-session';
 import methodOverride from 'method-override';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import dotenv from 'dotenv';
+
+/**
+ * Custom Modules
+ */
 import { pool } from './db/connection';
 import { errorHandler } from './middleware/error.middleware';
 import { AppError, ErrorMessages } from './utils/errors';
@@ -11,20 +25,26 @@ import { articleService } from './services/article.service';
 import authRoutes from './routes/auth.routes';
 import { requireAuth, validateLoginInput } from './middleware/auth.middleware';
 
-// Initialize environment variables
+/**
+ * Initialize environment variables
+ */
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Test database connection
+/**
+ * Test database connection
+ */
 await pool.query('SELECT NOW()');
 console.log('Database connection established');
 
 const app = express();
 const port = parseInt(process.env.PORT || '3000', 10);
 
-// Security middleware
+/** 
+ * Security middleware
+ */
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'DENY');
@@ -32,7 +52,9 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   next();
 });
 
-// Middleware setup
+/**
+ * Middleware setup
+ */ 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
@@ -49,14 +71,18 @@ app.use(session({
   }
 }));
 
-// Static files
+/**
+ * Static files
+ */
 app.use(express.static(join(__dirname, 'public')));
 
 app.get('/favicon.ico', (req, res) => {
   res.status(204).end();
 });
 
-// View engine setup
+/**
+ * View engine setup
+ */ 
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, 'views'));
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
@@ -65,10 +91,14 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
   next();
 });
 
-// Auth routes
+/**
+ * Auth routes
+ */
 app.use('/', authRoutes);
 
-// Login routes
+/**
+ * Login routes
+ */ 
 app.get('/login', (req: Request, res: Response) => {
   res.render('login', { 
     error: null,
@@ -98,7 +128,9 @@ app.post('/login', validateLoginInput, async (req: Request, res: Response) => {
   }
 });
 
-// Logout route
+/**
+ * Logout route
+ */ 
 app.post('/logout', (req: Request, res: Response) => {
   req.session.destroy(err => {
     if (err) {
@@ -108,7 +140,9 @@ app.post('/logout', (req: Request, res: Response) => {
   });
 });
 
-// Admin routes
+/**
+ * Admin routes
+ */ 
 app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articles = await articleService.getArticles();
@@ -122,7 +156,9 @@ app.get('/admin', requireAuth, async (req: Request, res: Response, next: NextFun
   }
 });
 
-// Route to create new article
+/**
+ * Route to create new article
+ */
 app.get('/admin/article/new', async (req: Request, res: Response, next: NextFunction) => {
   try {
     res.render('create-edit-article', { article: null });
@@ -151,7 +187,9 @@ app.post('/admin/article/new', requireAuth, async (req: Request, res: Response, 
   }
 });
 
-// Route to render the edit article page
+/**
+ * Route to render the edit article page
+ */ 
 app.get('/admin/article/:id/edit', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articleId = req.params.id;
@@ -170,7 +208,9 @@ app.get('/admin/article/:id/edit', requireAuth, async (req: Request, res: Respon
   }
 });
 
-// Route to update the article
+/**
+ * Route to update the article
+ */
 app.put('/admin/article/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
     const articleId = req.params.id;
@@ -196,8 +236,9 @@ app.put('/admin/article/:id', requireAuth, async (req: Request, res: Response, n
   }
 });
 
-// Route to delete an article
-
+/**
+ * Route to delete an article
+ */ 
 app.delete('/admin/article/:id', requireAuth, async (req: Request, res: Response, next: NextFunction) => {
   try {
       const articleId = req.params.id;
@@ -215,7 +256,9 @@ app.delete('/admin/article/:id', requireAuth, async (req: Request, res: Response
   }
 });
 
-// Combined Home Page Route
+/**
+ * Combined Home Page Route
+ */ 
 app.get('/', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const page = parseInt((req.query.page as string) || '1', 10);
@@ -257,7 +300,9 @@ app.get('/', async (req: express.Request, res: express.Response, next: express.N
 });
 
 
-// Single article page
+/**
+ * Single article page
+ */ 
 app.get('/article/:slug', async (req: express.Request, res: express.Response, next: express.NextFunction) => {
   try {
     const article = await articleService.getArticleBySlug(req.params.slug);
@@ -278,15 +323,21 @@ app.get('/article/:slug', async (req: express.Request, res: express.Response, ne
   }
 });
 
-// 404 handler
+/**
+ * 404 handler
+ */ 
 app.use((req: Request, res: Response, next: NextFunction) => {
   next(AppError.notFound(ErrorMessages.NOT_FOUND.page));
 });
 
-// Error handler
+/**
+ * Error handler
+ */
 app.use(errorHandler);
 
-// Initialize database and start server
+/**
+ * Initialize database and start server
+ */ 
 (async () => {
   try {
     await pool.query('SELECT NOW()');

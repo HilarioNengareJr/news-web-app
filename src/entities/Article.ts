@@ -1,13 +1,33 @@
-import { pool } from '../db/connection';
-import { Article } from '../types';
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
 import slugify from 'slugify';
 
+/**
+ * Customer Modules
+ */
+import { pool } from '../db/connection';
+import { Article } from '../types';
+
+/**
+ * 
+ * @param articleData 
+ * @param userId 
+ * @returns Promise<Article>
+ */
 export async function createArticle(
   articleData: Omit<Article, 'id' | 'slug' | 'publishedAt' | 'author'>,
   userId: string
 ): Promise<Article> {
   const slug = slugify(articleData.title, { lower: true, strict: true });
-  
+
   const result = await pool.query<Article>(`
     INSERT INTO articles 
       (title, slug, excerpt, content, image_url, tags, status, author_id, published_at)
@@ -34,6 +54,11 @@ export async function createArticle(
   return result.rows[0];
 }
 
+/** 
+ * 
+ * @params id
+ * returns Promise<Article | null> 
+ */
 export async function getArticleById(id: string): Promise<Article | null> {
   const result = await pool.query<Article>(`
     SELECT 
@@ -47,10 +72,13 @@ export async function getArticleById(id: string): Promise<Article | null> {
   return result.rows[0] || null;
 }
 
-export async function updateArticle(
-  id: string, 
-  articleData: Partial<Article>
-): Promise<Article> {
+/**
+ * 
+ * @param id 
+ * @param articleData 
+ * @returns Promise<Article>
+ */
+export async function updateArticle(id: string, articleData: Partial<Article>): Promise<Article> {
   const result = await pool.query<Article>(`
     UPDATE articles
     SET 
@@ -71,6 +99,10 @@ export async function updateArticle(
   return result.rows[0];
 }
 
+/**
+ * 
+ * @params id
+ */
 export async function deleteArticle(id: string): Promise<void> {
   await pool.query('DELETE FROM articles WHERE id = $1', [id]);
 }

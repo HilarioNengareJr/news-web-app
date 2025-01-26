@@ -1,7 +1,20 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
 import pg from 'pg';
 const { Pool } = pg;
 import dotenv from 'dotenv';
 
+/**
+ * Environment variables configuration
+ */
 dotenv.config();
 
 export const pool = new Pool({
@@ -15,7 +28,9 @@ export const pool = new Pool({
   connectionTimeoutMillis: 2000,
 });
 
-// Test the connection
+/**
+ * Testing the connection
+ */
 pool.query('SELECT NOW()')
   .then(() => console.log('Database connected'))
   .catch(err => {

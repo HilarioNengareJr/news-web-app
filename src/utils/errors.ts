@@ -1,5 +1,14 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
 export enum ErrorType {
-  /** Authentication related errors */
+  /** 
+   * Authentication related errors 
+   */
   AUTHENTICATION = 'AUTHENTICATION',
   AUTHORIZATION = 'AUTHORIZATION',
   NOT_FOUND = 'NOT_FOUND',

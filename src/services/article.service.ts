@@ -1,9 +1,27 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
+import slugify from 'slugify';
+
+
+/**
+ * Custom Modules
+ */
 import { pool } from '../db/connection';
 import { Article, PaginatedResponse } from '../types';
-import slugify from 'slugify';
 
 const ITEMS_PER_PAGE = 10;
 
+/**
+ * Service article
+ */
 export const articleService = {
   async getArticles(options: { 
     page?: number; 
@@ -65,6 +83,11 @@ export const articleService = {
     };
   },
 
+  /**
+   * 
+   * @param slug 
+   * @returns 
+   */
   async getArticleBySlug(slug: string) {
     const result = await pool.query<Article>(`
       SELECT 
@@ -88,6 +111,12 @@ export const articleService = {
     return result.rows[0] || null;
   },
 
+  /**
+   * 
+   * @param articleData 
+   * @param authorId 
+   * @returns 
+   */
   async createArticle(articleData: {
     title: string;
     content: string;
@@ -127,6 +156,12 @@ export const articleService = {
     return result.rows[0];
   },
 
+ /**
+  * 
+  * @param id 
+  * @param articleData 
+  * @returns 
+  */
   async updateArticle(
     id: string, 
     articleData: Partial<Article>
@@ -166,11 +201,20 @@ export const articleService = {
     return result.rows[0];
   },
 
+  /**
+   * 
+   * @param articleId 
+   */
   async deleteArticle(articleId: string) {
     const query = 'DELETE FROM articles WHERE id = $1';
     await pool.query(query, [articleId]);
 },
 
+/**
+ * 
+ * @param articleId 
+ * @returns 
+ */
   async getArticleById(articleId: string) {
       const query = 'SELECT * FROM articles WHERE id = $1';
       const { rows } = await pool.query(query, [articleId]);

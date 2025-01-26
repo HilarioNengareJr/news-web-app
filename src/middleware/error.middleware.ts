@@ -1,8 +1,22 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
 import { Request, Response, NextFunction } from 'express';
-import { AppError } from '../utils/errors';
-import { ErrorResponse } from '../types';
 import pg from 'pg';
 const { DatabaseError } = pg;
+
+/**
+ * Custom Modules
+ */
+import { AppError } from '../utils/errors';
+import { ErrorResponse } from '../types';
 
 /**
  * Error handling middleware that formats and returns consistent error responses

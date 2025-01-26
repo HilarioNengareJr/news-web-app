@@ -1,3 +1,8 @@
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
 declare module '*.ejs' {
   const value: (locals: Record<string, any>) => string;
   export default value;

@@ -1,6 +1,23 @@
-import { pool } from '../db/connection';
+/**
+ * @license MIT 
+ * @copyright Hilario Junior Nengare 2025
+ */
+
+'use strict';
+
+/**
+ * Node Modules
+ */
 import * as bcrypt from 'bcryptjs';
 
+/**
+ * Custom Modules
+ */
+import { pool } from '../db/connection';
+
+/**
+ * Interface for user entity
+ */
 export interface UserEntity {
   id: string;
   email: string;
@@ -9,12 +26,20 @@ export interface UserEntity {
   comparePassword(password: string): Promise<boolean>;
 }
 
+/**
+ * 
+ * User class implementation
+ */
 export class User implements UserEntity {
   id: string;
   email: string;
   passwordHash: string;
   role: string;
 
+  /**
+   * 
+   * @param user 
+   */
   constructor(user: UserEntity) {
     this.id = user.id;
     this.email = user.email;
@@ -22,11 +47,22 @@ export class User implements UserEntity {
     this.role = user.role;
   }
 
+  /**
+   * 
+   * @param password 
+   * @returns 
+   */
   async comparePassword(password: string): Promise<boolean> {
     return bcrypt.compare(password, this.passwordHash);
   }
 }
 
+/**
+ * 
+ * @param email 
+ * @param password 
+ * @returns 
+ */
 export async function createUser(email: string, password: string): Promise<UserEntity> {
   const passwordHash = await bcrypt.hash(password, 10);
   const result = await pool.query<User>(
@@ -38,6 +74,11 @@ export async function createUser(email: string, password: string): Promise<UserE
   return result.rows[0];
 }
 
+/**
+ * 
+ * @param email 
+ * @returns 
+ */
 export async function findUserByEmail(email: string): Promise<UserEntity | null> {
   const result = await pool.query<User>(
     `SELECT id, email, password_hash as "passwordHash", role
@@ -47,10 +88,22 @@ export async function findUserByEmail(email: string): Promise<UserEntity | null>
   return result.rows[0] || null;
 }
 
+/**
+ * 
+ * @param user 
+ * @param password 
+ * @returns 
+ */
 export async function comparePassword(user: UserEntity, password: string): Promise<boolean> {
   return bcrypt.compare(password, user.passwordHash);
 }
 
+/**
+ * 
+ * @param id 
+ * @param updates 
+ * @returns 
+ */
 export async function updateUser(id: string, updates: Partial<UserEntity>): Promise<UserEntity> {
   const result = await pool.query<User>(
     `UPDATE users 
@@ -64,10 +117,19 @@ export async function updateUser(id: string, updates: Partial<UserEntity>): Prom
   return result.rows[0];
 }
 
+/**
+ * 
+ * @param id 
+ */
 export async function deleteUser(id: string): Promise<void> {
   await pool.query('DELETE FROM users WHERE id = $1', [id]);
 }
 
+/**
+ * 
+ * @param userId 
+ * @returns 
+ */
 export async function isAdmin(userId: string): Promise<boolean> {
   const result = await pool.query<{ exists: boolean }>(
     `SELECT EXISTS(
