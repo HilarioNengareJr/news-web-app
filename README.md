@@ -154,15 +154,7 @@ This project is a scalable, feature-rich platform for managing and viewing news 
      DB_NAME=newswebapp
      ```
 
-### 4. **Run Database Migrations**
-
-Run the migrations to set up the necessary database tables:
-
-```bash
-npm run migrate
-```
-
-### 5. **Run the Application**
+### 4. **Run the Application**
 
 Start the application:
 
@@ -192,3 +184,40 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments 🌟
 Thanks to the Football Data Limited team for this opportunity, to join their soul and heart as part of their firm.
+
+## Screenshots of Application
+
+### Login Page
+
+src/public/readme_images/Screenshot from 2025-01-27 00-09-46.png
+
+
+### Admin Dashboard
+
+src/public/readme_images/Screenshot from 2025-01-27 00-10-18.png
+
+
+### Article Upload/Edit with tinyMCE api
+
+src/public/readme_images/Screenshot from 2025-01-27 00-10-35.png
+src/public/readme_images/Screenshot from 2025-01-27 00-10-46.png
+src/public/readme_images/Screenshot from 2025-01-27 00-10-57.png
+
+
+### Home Page With Featured Image and 2 uploads
+
+src/public/readme_images/Screenshot from 2025-01-27 00-11-10.png
+src/public/readme_images/Screenshot from 2025-01-27 00-11-25.png
+
+
+### Article Page
+
+src/public/readme_images/Screenshot from 2025-01-27 00-11-38.png
+src/public/readme_images/Screenshot from 2025-01-27 00-11-44.png
+
+### Search Bar (Entered a tag)(You can search with title)
+
+src/public/readme_images/Screenshot from 2025-01-27 00-12-00.png
+
+
+## The site is responsive and follows a mobile-first design approach!
