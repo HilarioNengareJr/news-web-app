@@ -3,7 +3,7 @@ DO $$
 DECLARE
   admin_id UUID;
 BEGIN
-  -- Get the admin user ID (assuming one exists)
+  -- Getting the admin user ID (assuming one exists)
   SELECT id INTO admin_id FROM users LIMIT 1;
   
   -- If no users exist, create one
@@ -15,7 +15,7 @@ BEGIN
     ) RETURNING id INTO admin_id;
   END IF;
 
-  -- Insert dummy articles
+  -- Inserting dummy articles
   INSERT INTO articles (id, title, slug, excerpt, content, image_url, tags, status, author_id, published_at) VALUES
   (
     '00000000-0000-0000-0000-000000000001',
@@ -78,7 +78,7 @@ BEGIN
     NOW() - INTERVAL '4 days'
   );
 
-  -- Insert some tags
+  -- Inserting some tags
   INSERT INTO tags (name) VALUES
   ('analytics'),
   ('technology'),
@@ -94,7 +94,7 @@ BEGIN
   ('recruitment')
   ON CONFLICT (name) DO NOTHING;
 
-  -- Link articles to tags
+  -- Linking articles to tags
   INSERT INTO article_tags (article_id, tag_id)
   SELECT a.id, t.id
   FROM articles a

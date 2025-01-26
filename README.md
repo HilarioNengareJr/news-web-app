@@ -47,38 +47,130 @@ This project is a scalable, feature-rich platform for managing and viewing news 
 
 ## Installation Steps 
 
-1. **Clone the Repository**
+### 1. **Clone the Repository**
    ```bash
    git clone https://github.com/HilarioNengareJr/news-web-app.git
    cd news-web-app
    ```
 
-2. **Install Dependencies**
+### 2. **Install Dependencies**
    ```bash
    npm install
    ```
 
-3. **Set Up the Database**
-   - Install PostgreSQL if not already installed.
-   - Create a new database.
-   - Configure the database connection in `.env`:
-     ```env
-     DB_HOST=your_database_host
-     DB_PORT=your_database_port
-     DB_USER=your_database_user
-     DB_PASSWORD=your_database_password
-     DB_NAME=your_database_name
+### 3. **Set Up PostgreSQL**
+
+#### **For Windows:**
+
+1. **Install PostgreSQL**
+   - Download the installer from the [PostgreSQL Downloads page](https://www.postgresql.org/download/windows/).
+   - Run the installer and follow the on-screen instructions to complete the setup.
+   - Make sure to include the `pgAdmin` tool and configure the default password for the `postgres` superuser.
+
+2. **Start PostgreSQL Service**
+   - PostgreSQL should start automatically after installation.
+   - If it's not running, you can start it via the **pgAdmin** application or from the Windows services (`services.msc`).
+
+3. **Create Database and User**
+   - Open **pgAdmin** or a command-line interface like `psql`:
+     - Launch **pgAdmin** from the Start Menu.
+     - In **pgAdmin**, connect to the server using the `postgres` superuser credentials.
+   - Create a new database:
+     ```sql
+     CREATE DATABASE newswebapp;
      ```
-   - Run database migrations:
-     ```bash
-     npm run migrate
+   - Create a new user:
+     ```sql
+     CREATE USER your_username WITH PASSWORD 'your_password';
+     ```
+   - Grant privileges to the user:
+     ```sql
+     GRANT ALL PRIVILEGES ON DATABASE newswebapp TO your_username;
      ```
 
-4. **Run the Application**
-   ```bash
-   npm start
+4. **Configure Database Connection**
+   - Open the `.env` file in the root of your project.
+   - Update the database configuration:
+     ```env
+     DB_HOST=localhost
+     DB_PORT=5432
+     DB_USER=your_username
+     DB_PASSWORD=your_password
+     DB_NAME=newswebapp
+     ```
+
+#### **For Ubuntu:**
+
+1. **Install PostgreSQL**
+   - Use the following commands to install PostgreSQL:
+     ```bash
+     sudo apt update
+     sudo apt install postgresql postgresql-contrib
+     ```
+
+2. **Start PostgreSQL Service**
+   - Ensure PostgreSQL is running:
+     ```bash
+     sudo service postgresql start
+     ```
+
+3. **Create Database and User**
+   - Access the PostgreSQL shell:
+     ```bash
+     sudo -u postgres psql
+     ```
+   - Create a new database:
+     ```sql
+     CREATE DATABASE newswebapp;
+     ```
+   - Create a new user:
+     ```sql
+     CREATE USER your_username WITH PASSWORD 'your_password';
+     ```
+   - Grant privileges to the user:
+     ```sql
+     GRANT ALL PRIVILEGES ON DATABASE newswebapp TO your_username;
+     ```
+
+   - Run initial schema set up
    ```
-   The app will be available at `http://localhost:3000`.
+      psql -h localhost -U your_database_user -d your_database_name -f .\migrations\001-initial-schema.sql
+   ```
+
+   - Performing seeding
+
+   ```
+   psql -h localhost -U your_database_user -d your_database_name -f .\migrations\002-seed-articles.sql
+    ```
+
+1. **Configure Database Connection**
+   - Open the `.env` file in the root of your project.
+   - Update the database connection details:
+     ```env
+     DB_HOST=localhost
+     DB_PORT=5432
+     DB_USER=your_username
+     DB_PASSWORD=your_password
+     DB_NAME=newswebapp
+     ```
+
+### 4. **Run Database Migrations**
+
+Run the migrations to set up the necessary database tables:
+
+```bash
+npm run migrate
+```
+
+### 5. **Run the Application**
+
+Start the application:
+
+```bash
+npm run dev
+```
+
+The app will be available at `http://localhost:3000`.
 
 ## Usage 
 
@@ -100,5 +192,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments 🌟
 Thanks to the Football Data Limited team for this opportunity, to join their soul and heart as part of their firm.
-
-
