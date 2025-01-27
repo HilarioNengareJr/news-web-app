@@ -174,10 +174,6 @@ The app will be available at `http://localhost:3000`.
    - Browse the Home page to view articles.
    - Use the search functionality to find articles by title or tags.
 
-## Deployment 
-To deploy the application on a cloud platform:
-- Ensure your environment variables are properly configured.
-- Use platforms like Heroku, AWS, or Vercel for deployment.
 
 ## License 🔒
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
