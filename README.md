@@ -5,7 +5,9 @@ This project is a scalable, feature-rich platform for managing and viewing news 
 ## Features 🔥
 
 1. **Authentication** 
-   - Only admins can log in.
+   - Only admins can log in
+      - Dummy Email: admin@example.com
+      - Dummy Password: password
    - Session-based authentication to ensure secure access.
 
 2. **News Articles** 
