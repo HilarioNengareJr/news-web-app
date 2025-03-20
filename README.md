@@ -1,6 +1,4 @@
-# News Web Application 🚀
-
-This project is a scalable, feature-rich platform for managing and viewing news articles, implemented as a challenge provided by the team at Football Data. It’s designed to provide a seamless experience for both visitors and admin users.
+# News Web App
 
 ## Features 🔥
 
